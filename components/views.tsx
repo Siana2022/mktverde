@@ -1,8 +1,9 @@
 import React from "react";
 import type { PanelData, MonthPoint } from "@/lib/types";
+import { emptySplit } from "@/lib/attribution";
 import { eur, eur1, num, roas } from "@/lib/format";
 import { Kpi, Legend, PendingCard } from "./ui";
-import { MonthlyWeb, WebVsGoogle, DailyWeb, RoasLine, HourlyWeb, Donut, ChannelBars } from "./charts";
+import { MonthlyWeb, RoasLine, Donut, ChannelMix, DailyStack, HourlyStack, channelLegend } from "./charts";
 
 const curr = (d: PanelData): MonthPoint => d.months[d.months.length - 1];
 const monthName: Record<string, string> = {
@@ -47,45 +48,39 @@ export function GlobalView({ data }: { data: PanelData }) {
 export function WebView({ data }: { data: PanelData }) {
   const m = curr(data);
   const roasG = m.googleSpend ? m.googleConvValue / m.googleSpend : 0;
-  const noAtribuido = Math.max(m.webTotal - m.googleConvValue, 0);
+  const split = m.webByChannel ?? emptySplit();
   return (
     <main>
       <section className="kpis">
         <Kpi lab="Facturado web" val={eur(m.webTotal)} sub={`${mLong(m)} · ${num(m.webOrders)} pedidos`} />
         <Kpi lab="Inversión Google Ads" val={eur(m.googleSpend)} sub={`${num(Math.round(m.googleClicks))} clics`} />
         <Kpi lab="ROAS Google" val={roas(roasG)} sub="según atribución de Google" />
-        <Kpi lab="Valor atribuido Google" val={eur(m.googleConvValue)} sub={`${Math.round((m.googleConvValue / (m.webTotal || 1)) * 100)}% del facturado web`} />
+        <Kpi lab="Google (1st-party)" val={eur(split.google)} sub={`${Math.round((split.google / (m.webTotal || 1)) * 100)}% del facturado · atribución propia`} />
       </section>
 
       <section className="grid">
         <div className="card">
-          <h3>Ventas web vs atribuido a Google</h3>
-          <div className="cap">Barras = total web · línea = valor que Google se atribuye · 6 meses</div>
-          <Legend items={[["web", "--accent", "Ventas web (Shopify)"], ["goo", "--c-google", "Atribuido Google Ads"]]} />
-          <WebVsGoogle months={data.months} />
+          <h3>Ventas diarias por canal · {mLong(m)}</h3>
+          <div className="cap">Cada barra es un día, apilada por canal</div>
+          <Legend items={channelLegend()} />
+          <DailyStack days={data.currentMonthDaily} />
         </div>
         <div className="card">
-          <h3>Atribución del mes</h3>
-          <div className="cap">Qué parte del facturado web es medible hoy</div>
-          <ChannelBars rows={[
-            { label: "Google Ads", value: m.googleConvValue, color: "var(--c-google)" },
-            { label: "Resto / no atribuido", value: noAtribuido, color: "var(--c-directo)" },
-          ]} />
+          <h3>Mezcla de canales · {mLong(m)}</h3>
+          <div className="cap">Atribución propia (UTMs + clic de pago), último toque</div>
+          <ChannelMix split={split} />
           <div className="note" style={{ marginTop: 12 }}>
-            <span>⚠︎</span>
-            <span>
-              Shopify no trae origen en el ~94% de los pedidos. El desglose fino por canal (SEO, Orgánico, Meta,
-              Email, Directo) requiere captura de UTMs + atribución propia — la capa «ledger» de la fase siguiente.
-            </span>
+            <span>✓</span>
+            <span>Reparto real a partir de los parámetros de campaña (gclid/fbclid, utm_*) capturados en cada pedido.</span>
           </div>
         </div>
       </section>
 
       <section className="grid">
         <div className="card">
-          <h3>Ventas web diarias · {mLong(m)}</h3>
-          <div className="cap">Cada barra es un día</div>
-          <DailyWeb days={data.currentMonthDaily} />
+          <h3>Facturación web · histórico</h3>
+          <div className="cap">Ventas totales · 6 meses</div>
+          <MonthlyWeb months={data.months} />
         </div>
         <div className="card">
           <h3>ROAS Google Ads</h3>
@@ -115,8 +110,9 @@ export function IntradiaView({ data }: { data: PanelData }) {
       <section className="grid">
         <div className="card">
           <h3>Ventas web por hora · hoy</h3>
-          <div className="cap">Cada barra es una hora · línea = ahora ({String(data.nowHour).padStart(2, "0")}:00)</div>
-          <HourlyWeb hours={data.todayHourly} nowHour={data.nowHour} />
+          <div className="cap">Cada barra es una hora, apilada por canal · línea = ahora ({String(data.nowHour).padStart(2, "0")}:00)</div>
+          <Legend items={channelLegend()} />
+          <HourlyStack hours={data.todayHourly} nowHour={data.nowHour} />
         </div>
         <div className="card">
           <h3>Resumen del día</h3>

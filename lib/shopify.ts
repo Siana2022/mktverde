@@ -4,6 +4,7 @@
 
 import type { MonthPoint, DayPoint, HourPoint, Product } from "./types";
 import { monthKeyToLabel } from "./time";
+import { classifyOrder, emptySplit, type ChannelSplit } from "./attribution";
 
 const DOMAIN = process.env.SHOPIFY_STORE_DOMAIN;
 const TOKEN = process.env.SHOPIFY_ADMIN_TOKEN;
@@ -14,6 +15,7 @@ export const shopifyConfigured = Boolean(DOMAIN && TOKEN);
 interface OrderNode {
   createdAt: string;
   currentTotalPriceSet: { shopMoney: { amount: string } };
+  customAttributes: { key: string; value: string }[];
   lineItems: { nodes: { title: string; quantity: number; originalTotalSet: { shopMoney: { amount: string } } }[] };
 }
 
@@ -24,6 +26,7 @@ const ORDERS_QUERY = /* GraphQL */ `
       nodes {
         createdAt
         currentTotalPriceSet { shopMoney { amount } }
+        customAttributes { key value }
         lineItems(first: 50) {
           nodes { title quantity originalTotalSet { shopMoney { amount } } }
         }
@@ -65,8 +68,8 @@ async function fetchOrders(sinceDay: string, untilDay: string): Promise<OrderNod
 }
 
 export interface ShopifyAggregates {
-  months: Pick<MonthPoint, "key" | "label" | "webTotal" | "webOrders" | "aov">[];
-  currentMonthDaily: Pick<DayPoint, "day" | "webTotal" | "webOrders">[];
+  months: Pick<MonthPoint, "key" | "label" | "webTotal" | "webOrders" | "aov" | "webByChannel">[];
+  currentMonthDaily: Pick<DayPoint, "day" | "webTotal" | "webOrders" | "webByChannel">[];
   todayHourly: HourPoint[];
   topProducts: Product[];
 }
@@ -90,19 +93,22 @@ export async function getShopifyAggregates(
     const sinceDay = `${monthKeys[0]}-01`;
     const orders = await fetchOrders(sinceDay, today);
 
-    const mAgg = new Map<string, { total: number; orders: number }>();
-    const dAgg = new Map<string, { total: number; orders: number }>();
-    const hAgg = new Map<number, { total: number; orders: number }>();
+    type Bucket = { total: number; orders: number; ch: ChannelSplit };
+    const bucket = (): Bucket => ({ total: 0, orders: 0, ch: emptySplit() });
+    const mAgg = new Map<string, Bucket>();
+    const dAgg = new Map<string, Bucket>();
+    const hAgg = new Map<number, Bucket>();
     const pAgg = new Map<string, { sales: number; orders: number }>();
 
     for (const o of orders) {
       const amount = parseFloat(o.currentTotalPriceSet.shopMoney.amount) || 0;
+      const channel = classifyOrder(o.customAttributes || []);
       const { ymd, month, hour } = partsInTz(o.createdAt, tz);
-      const m = mAgg.get(month) || { total: 0, orders: 0 };
-      m.total += amount; m.orders += 1; mAgg.set(month, m);
+      const m = mAgg.get(month) || bucket();
+      m.total += amount; m.orders += 1; m.ch[channel] += amount; mAgg.set(month, m);
       if (month === currentMonthKey) {
-        const d = dAgg.get(ymd) || { total: 0, orders: 0 };
-        d.total += amount; d.orders += 1; dAgg.set(ymd, d);
+        const d = dAgg.get(ymd) || bucket();
+        d.total += amount; d.orders += 1; d.ch[channel] += amount; dAgg.set(ymd, d);
         for (const li of o.lineItems.nodes) {
           const pv = pAgg.get(li.title) || { sales: 0, orders: 0 };
           pv.sales += parseFloat(li.originalTotalSet.shopMoney.amount) || 0;
@@ -110,19 +116,19 @@ export async function getShopifyAggregates(
         }
       }
       if (ymd === today) {
-        const h = hAgg.get(hour) || { total: 0, orders: 0 };
-        h.total += amount; h.orders += 1; hAgg.set(hour, h);
+        const h = hAgg.get(hour) || bucket();
+        h.total += amount; h.orders += 1; h.ch[channel] += amount; hAgg.set(hour, h);
       }
     }
 
     const months = monthKeys.map((key) => {
-      const a = mAgg.get(key) || { total: 0, orders: 0 };
-      return { key, label: monthKeyToLabel(key), webTotal: a.total, webOrders: a.orders, aov: a.orders ? a.total / a.orders : 0 };
+      const a = mAgg.get(key) || bucket();
+      return { key, label: monthKeyToLabel(key), webTotal: a.total, webOrders: a.orders, aov: a.orders ? a.total / a.orders : 0, webByChannel: a.ch };
     });
-    const currentMonthDaily = [...dAgg.entries()].sort().map(([day, a]) => ({ day, webTotal: a.total, webOrders: a.orders }));
+    const currentMonthDaily = [...dAgg.entries()].sort().map(([day, a]) => ({ day, webTotal: a.total, webOrders: a.orders, webByChannel: a.ch }));
     const todayHourly: HourPoint[] = Array.from({ length: 24 }, (_, hour) => {
-      const a = hAgg.get(hour) || { total: 0, orders: 0 };
-      return { hour, webTotal: a.total, webOrders: a.orders };
+      const a = hAgg.get(hour) || bucket();
+      return { hour, webTotal: a.total, webOrders: a.orders, webByChannel: a.ch };
     });
     const topProducts = [...pAgg.entries()]
       .map(([title, a]) => ({ title, sales: a.sales, orders: a.orders }))

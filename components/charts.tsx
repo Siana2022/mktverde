@@ -2,10 +2,13 @@
 
 import React from "react";
 import type { MonthPoint, DayPoint, HourPoint } from "@/lib/types";
+import { CHANNELS, CHANNEL_META, type Channel, type ChannelSplit } from "@/lib/attribution";
 import { eur, roas as fmtRoas, dayNum } from "@/lib/format";
 import { showTT, hideTT } from "./tooltip";
 
 const niceMax = (v: number, step: number) => Math.max(step, Math.ceil(v / step) * step);
+const splitTotal = (s: ChannelSplit) => CHANNELS.reduce((a, c) => a + (s[c] || 0), 0);
+export const channelLegend = (): [string, string, string][] => CHANNELS.map((c) => [c, CHANNEL_META[c].varName, CHANNEL_META[c].label]);
 
 // ── Barras mensuales de ventas web ──
 export function MonthlyWeb({ months }: { months: MonthPoint[] }) {
@@ -191,6 +194,128 @@ export function Donut({ web, amazon, label }: { web: number; amazon: number | nu
         )}
       </div>
     </div>
+  );
+}
+
+// ── Mezcla por canal (barras horizontales desde un ChannelSplit) ──
+export function ChannelMix({ split }: { split: ChannelSplit }) {
+  const total = splitTotal(split) || 1;
+  const rows = CHANNELS.map((c) => ({ c, label: CHANNEL_META[c].label, color: `var(${CHANNEL_META[c].varName})`, value: split[c] || 0 }))
+    .sort((a, b) => b.value - a.value);
+  const max = Math.max(...rows.map((r) => r.value), 1);
+  return (
+    <div>
+      {rows.map((r) => (
+        <div className="chrow" key={r.c}>
+          <div className="chname"><span className="sw" style={{ background: r.color }} />{r.label}</div>
+          <div className="chbarwrap"><div className="chbar" style={{ width: (r.value / max) * 100 + "%", background: r.color }} /></div>
+          <div className="chval num"><b>{eur(r.value)}</b><span>{Math.round((r.value / total) * 100)}%</span></div>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+// ── Barras mensuales apiladas por canal ──
+export function MonthlyStack({ months }: { months: MonthPoint[] }) {
+  const W = 560, H = 240, padL = 44, padB = 26, padT = 10, padR = 8;
+  const tot = (m: MonthPoint) => (m.webByChannel ? splitTotal(m.webByChannel) : m.webTotal);
+  const yMax = niceMax(Math.max(...months.map(tot), 1), 10000);
+  const bw = (W - padL - padR) / months.length, y = (v: number) => padT + (H - padT - padB) * (1 - v / yMax);
+  return (
+    <svg viewBox={`0 0 ${W} ${H}`} role="img" aria-label="Ventas web mensuales por canal">
+      {[0, yMax / 2, yMax].map((t, i) => (
+        <g key={i}><line className="gl" x1={padL} x2={W - padR} y1={y(t)} y2={y(t)} />
+          <text className="axis" x={padL - 6} y={y(t) + 3} textAnchor="end">{Math.round(t / 1000)}k</text></g>
+      ))}
+      {months.map((m, i) => {
+        const x = padL + bw * i + bw * 0.2, w = bw * 0.6;
+        const split = m.webByChannel;
+        let acc = 0;
+        return (
+          <g key={m.key}>
+            {split
+              ? CHANNELS.map((c) => {
+                  const v = split[c] || 0; if (v <= 0) return null;
+                  const h = (H - padT - padB) * v / yMax, yy = y(acc + v); acc += v;
+                  return <rect className="seg" key={c} x={x} y={yy} width={w} height={h} fill={`var(${CHANNEL_META[c].varName})`}
+                    onMouseMove={(e) => showTT(e, `${m.label} · ${CHANNEL_META[c].label} <span class="num">${eur(v)}</span>`)} onMouseLeave={hideTT} />;
+                })
+              : <rect className="seg" x={x} y={y(m.webTotal)} width={w} height={(H - padT - padB) * m.webTotal / yMax} rx="2" fill="var(--accent)" opacity={0.85}
+                  onMouseMove={(e) => showTT(e, `${m.label} · <span class="num">${eur(m.webTotal)}</span>`)} onMouseLeave={hideTT} />}
+            <text className="axis" x={x + w / 2} y={H - padB + 14} textAnchor="middle">{m.label}</text>
+          </g>
+        );
+      })}
+    </svg>
+  );
+}
+
+// ── Barras diarias apiladas por canal ──
+export function DailyStack({ days }: { days: DayPoint[] }) {
+  const W = 560, H = 210, padL = 40, padB = 22, padT = 10, padR = 6;
+  const tot = (d: DayPoint) => (d.webByChannel ? splitTotal(d.webByChannel) : d.webTotal);
+  const yMax = niceMax(Math.max(...days.map(tot), 1), 1000);
+  const bw = (W - padL - padR) / Math.max(days.length, 1), y = (v: number) => padT + (H - padT - padB) * (1 - v / yMax);
+  return (
+    <svg viewBox={`0 0 ${W} ${H}`} role="img" aria-label="Ventas web diarias por canal">
+      {[0, yMax / 2, yMax].map((t, i) => (
+        <g key={i}><line className="gl" x1={padL} x2={W - padR} y1={y(t)} y2={y(t)} />
+          <text className="axis" x={padL - 5} y={y(t) + 3} textAnchor="end">{Math.round(t / 1000)}k</text></g>
+      ))}
+      {days.map((d, i) => {
+        const x = padL + bw * i + bw * 0.14, w = bw * 0.72, dd = dayNum(d.day);
+        const split = d.webByChannel; let acc = 0; const dt = tot(d);
+        return (
+          <g key={d.day} onMouseMove={(e) => showTT(e, `${dd} · <span class="num">${eur(dt)}</span>`)} onMouseLeave={hideTT}>
+            {split
+              ? CHANNELS.map((c) => {
+                  const v = split[c] || 0; if (v <= 0) return null;
+                  const h = (H - padT - padB) * v / yMax, yy = y(acc + v); acc += v;
+                  return <rect className="seg" key={c} x={x} y={yy} width={w} height={Math.max(h, 0.6)} fill={`var(${CHANNEL_META[c].varName})`} />;
+                })
+              : <rect className="seg" x={x} y={y(d.webTotal)} width={w} height={(H - padT - padB) * d.webTotal / yMax} fill="var(--accent)" />}
+            {Number(dd) % 5 === 0 && <text className="axis" x={x + w / 2} y={H - padB + 13} textAnchor="middle">{dd}</text>}
+          </g>
+        );
+      })}
+    </svg>
+  );
+}
+
+// ── Barras por hora apiladas por canal (hoy) con marcador "ahora" ──
+export function HourlyStack({ hours, nowHour }: { hours: HourPoint[]; nowHour: number }) {
+  const W = 560, H = 220, padL = 40, padB = 22, padT = 10, padR = 6;
+  const tot = (h: HourPoint) => (h.webByChannel ? splitTotal(h.webByChannel) : h.webTotal);
+  const shown = hours.map((h) => (h.hour <= nowHour ? tot(h) : 0));
+  const yMax = niceMax(Math.max(...shown, 1), 50);
+  const bw = (W - padL - padR) / 24, y = (v: number) => padT + (H - padT - padB) * (1 - v / yMax);
+  const xC = (h: number) => padL + bw * h + bw * 0.15, w = bw * 0.7, nowX = padL + bw * (nowHour + 1);
+  return (
+    <svg viewBox={`0 0 ${W} ${H}`} role="img" aria-label="Ventas web por hora por canal, hoy">
+      {[0, yMax / 2, yMax].map((t, i) => (
+        <g key={i}><line className="gl" x1={padL} x2={W - padR} y1={y(t)} y2={y(t)} />
+          <text className="axis" x={padL - 5} y={y(t) + 3} textAnchor="end">{Math.round(t)}</text></g>
+      ))}
+      {hours.map((h) => {
+        if (h.hour > nowHour) return h.hour % 3 === 0 ? <text key={h.hour} className="axis" x={xC(h.hour) + w / 2} y={H - padB + 13} textAnchor="middle" opacity={0.5}>{h.hour}</text> : null;
+        const split = h.webByChannel; let acc = 0; const dt = tot(h);
+        return (
+          <g key={h.hour} onMouseMove={(e) => showTT(e, `${h.hour}:00 · <span class="num">${eur(dt)}</span>`)} onMouseLeave={hideTT}>
+            {split
+              ? CHANNELS.map((c) => {
+                  const v = split[c] || 0; if (v <= 0) return null;
+                  const hh = (H - padT - padB) * v / yMax, yy = y(acc + v); acc += v;
+                  return <rect className="seg" key={c} x={xC(h.hour)} y={yy} width={w} height={Math.max(hh, 0.6)} fill={`var(${CHANNEL_META[c].varName})`} />;
+                })
+              : <rect className="seg" x={xC(h.hour)} y={y(h.webTotal)} width={w} height={(H - padT - padB) * h.webTotal / yMax} fill="var(--accent)" />}
+            {h.hour % 3 === 0 && <text className="axis" x={xC(h.hour) + w / 2} y={H - padB + 13} textAnchor="middle">{h.hour}</text>}
+          </g>
+        );
+      })}
+      <line x1={nowX} x2={nowX} y1={padT} y2={H - padB} stroke="var(--accent)" strokeWidth="1.3" strokeDasharray="3 3" />
+      <text x={nowX + 3} y={padT + 9} fontSize="9.5" fill="var(--accent)" fontWeight="600">ahora</text>
+    </svg>
   );
 }
 

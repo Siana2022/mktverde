@@ -14,6 +14,7 @@ function fromSnapshot(): PanelData {
   return {
     generatedAt: s.generatedAt,
     live: false,
+    attribution: true,
     sources: { shopify: false, googleAds: false, amazon: false, meta: false },
     shopName: s.shopName,
     currency: s.currency,
@@ -72,18 +73,20 @@ export async function getPanelData(): Promise<PanelData> {
       googleConversions: gm.conversions,
       googleClicks: gm.clicks,
       googleImpressions: gm.impressions,
+      webByChannel: m.webByChannel,
       partial: m.key === monthKey,
     };
   });
 
   const currentMonthDaily: DayPoint[] = shop.currentMonthDaily.map((d) => {
     const gm = gd(d.day);
-    return { day: d.day, webTotal: d.webTotal, webOrders: d.webOrders, googleSpend: gm.spend, googleConvValue: gm.convValue };
+    return { day: d.day, webTotal: d.webTotal, webOrders: d.webOrders, googleSpend: gm.spend, googleConvValue: gm.convValue, webByChannel: d.webByChannel };
   });
 
   return {
     generatedAt: new Date().toISOString(),
     live: true,
+    attribution: true,
     sources: { shopify: true, googleAds: Boolean(google), amazon: false, meta: false },
     shopName: snapshot.shopName,
     currency: snapshot.currency,

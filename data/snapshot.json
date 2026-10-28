@@ -7,75 +7,867 @@
   "today": "2026-10-28",
   "currentMonthKey": "2026-10",
   "months": [
-    { "key": "2026-05", "label": "may", "webTotal": 43558.90, "webGross": 43595.15, "webNet": 43409.65, "webOrders": 387, "aov": 112.65, "googleSpend": 2357.03, "googleConvValue": 13829.21, "googleConversions": 93.61, "googleClicks": 8201, "googleImpressions": 349889 },
-    { "key": "2026-06", "label": "jun", "webTotal": 36470.66, "webGross": 43087.04, "webNet": 36470.66, "webOrders": 450, "aov": 81.08, "googleSpend": 3574.63, "googleConvValue": 17701.33, "googleConversions": 145.30, "googleClicks": 14780, "googleImpressions": 415860 },
-    { "key": "2026-07", "label": "jul", "webTotal": 33550.92, "webGross": 41549.14, "webNet": 33550.92, "webOrders": 435, "aov": 78.36, "googleSpend": 5414.01, "googleConvValue": 23750.32, "googleConversions": 195.82, "googleClicks": 9693, "googleImpressions": 586767 },
-    { "key": "2026-08", "label": "ago", "webTotal": 50485.19, "webGross": 66931.40, "webNet": 50485.19, "webOrders": 752, "aov": 67.95, "googleSpend": 5560.87, "googleConvValue": 30568.27, "googleConversions": 295.67, "googleClicks": 10714, "googleImpressions": 836825 },
-    { "key": "2026-09", "label": "sep", "webTotal": 62289.93, "webGross": 78140.71, "webNet": 62289.93, "webOrders": 970, "aov": 65.47, "googleSpend": 8310.92, "googleConvValue": 36488.91, "googleConversions": 325.01, "googleClicks": 12235, "googleImpressions": 1032203 },
-    { "key": "2026-10", "label": "oct", "webTotal": 36777.79, "webGross": 40707.85, "webNet": 36767.80, "webOrders": 379, "aov": 97.45, "googleSpend": 3173.82, "googleConvValue": 17426.55, "googleConversions": 133.90, "googleClicks": 6272, "googleImpressions": 225813, "partial": true }
+    {
+      "key": "2026-05",
+      "label": "may",
+      "webTotal": 43558.9,
+      "webGross": 43595.15,
+      "webNet": 43409.65,
+      "webOrders": 387,
+      "aov": 112.65,
+      "googleSpend": 2357.03,
+      "googleConvValue": 13829.21,
+      "googleConversions": 93.61,
+      "googleClicks": 8201,
+      "googleImpressions": 349889
+    },
+    {
+      "key": "2026-06",
+      "label": "jun",
+      "webTotal": 36470.66,
+      "webGross": 43087.04,
+      "webNet": 36470.66,
+      "webOrders": 450,
+      "aov": 81.08,
+      "googleSpend": 3574.63,
+      "googleConvValue": 17701.33,
+      "googleConversions": 145.3,
+      "googleClicks": 14780,
+      "googleImpressions": 415860
+    },
+    {
+      "key": "2026-07",
+      "label": "jul",
+      "webTotal": 33550.92,
+      "webGross": 41549.14,
+      "webNet": 33550.92,
+      "webOrders": 435,
+      "aov": 78.36,
+      "googleSpend": 5414.01,
+      "googleConvValue": 23750.32,
+      "googleConversions": 195.82,
+      "googleClicks": 9693,
+      "googleImpressions": 586767
+    },
+    {
+      "key": "2026-08",
+      "label": "ago",
+      "webTotal": 50485.19,
+      "webGross": 66931.4,
+      "webNet": 50485.19,
+      "webOrders": 752,
+      "aov": 67.95,
+      "googleSpend": 5560.87,
+      "googleConvValue": 30568.27,
+      "googleConversions": 295.67,
+      "googleClicks": 10714,
+      "googleImpressions": 836825
+    },
+    {
+      "key": "2026-09",
+      "label": "sep",
+      "webTotal": 62289.93,
+      "webGross": 78140.71,
+      "webNet": 62289.93,
+      "webOrders": 970,
+      "aov": 65.47,
+      "googleSpend": 8310.92,
+      "googleConvValue": 36488.91,
+      "googleConversions": 325.01,
+      "googleClicks": 12235,
+      "googleImpressions": 1032203
+    },
+    {
+      "key": "2026-10",
+      "label": "oct",
+      "webTotal": 36777.79,
+      "webGross": 40707.85,
+      "webNet": 36767.8,
+      "webOrders": 379,
+      "aov": 97.45,
+      "googleSpend": 3173.82,
+      "googleConvValue": 17426.55,
+      "googleConversions": 133.9,
+      "googleClicks": 6272,
+      "googleImpressions": 225813,
+      "partial": true,
+      "webByChannel": {
+        "seo": 3960.11,
+        "organico": 381.1,
+        "google": 13691.15,
+        "meta": 4554.77,
+        "email": 12433.78,
+        "directo": 1826.05
+      }
+    }
   ],
   "currentMonthDaily": [
-    { "day": "2026-10-01", "webTotal": 389.28, "webOrders": 8, "googleSpend": 289.73, "googleConvValue": 722.98 },
-    { "day": "2026-10-02", "webTotal": 2649.74, "webOrders": 15, "googleSpend": 276.70, "googleConvValue": 613.00 },
-    { "day": "2026-10-03", "webTotal": 1359.03, "webOrders": 13, "googleSpend": 154.61, "googleConvValue": 594.55 },
-    { "day": "2026-10-04", "webTotal": 632.46, "webOrders": 9, "googleSpend": 189.82, "googleConvValue": 525.83 },
-    { "day": "2026-10-05", "webTotal": 764.19, "webOrders": 10, "googleSpend": 128.50, "googleConvValue": 477.70 },
-    { "day": "2026-10-06", "webTotal": 532.00, "webOrders": 6, "googleSpend": 85.35, "googleConvValue": 508.43 },
-    { "day": "2026-10-07", "webTotal": 2226.35, "webOrders": 6, "googleSpend": 83.39, "googleConvValue": 283.50 },
-    { "day": "2026-10-08", "webTotal": 546.33, "webOrders": 8, "googleSpend": 68.31, "googleConvValue": 284.80 },
-    { "day": "2026-10-09", "webTotal": 559.97, "webOrders": 7, "googleSpend": 108.47, "googleConvValue": 189.78 },
-    { "day": "2026-10-10", "webTotal": 564.48, "webOrders": 9, "googleSpend": 109.67, "googleConvValue": 745.31 },
-    { "day": "2026-10-11", "webTotal": 191.95, "webOrders": 3, "googleSpend": 125.93, "googleConvValue": 184.14 },
-    { "day": "2026-10-12", "webTotal": 763.01, "webOrders": 9, "googleSpend": 83.23, "googleConvValue": 590.80 },
-    { "day": "2026-10-13", "webTotal": 4146.56, "webOrders": 47, "googleSpend": 117.60, "googleConvValue": 1222.54 },
-    { "day": "2026-10-14", "webTotal": 1780.48, "webOrders": 15, "googleSpend": 95.17, "googleConvValue": 1306.24 },
-    { "day": "2026-10-15", "webTotal": 2439.35, "webOrders": 23, "googleSpend": 76.87, "googleConvValue": 1120.70 },
-    { "day": "2026-10-16", "webTotal": 657.18, "webOrders": 12, "googleSpend": 83.96, "googleConvValue": 428.30 },
-    { "day": "2026-10-17", "webTotal": 2288.74, "webOrders": 25, "googleSpend": 80.58, "googleConvValue": 982.94 },
-    { "day": "2026-10-18", "webTotal": 1076.47, "webOrders": 16, "googleSpend": 89.56, "googleConvValue": 368.50 },
-    { "day": "2026-10-19", "webTotal": 1837.44, "webOrders": 20, "googleSpend": 78.43, "googleConvValue": 861.62 },
-    { "day": "2026-10-20", "webTotal": 4174.31, "webOrders": 40, "googleSpend": 102.62, "googleConvValue": 1974.25 },
-    { "day": "2026-10-21", "webTotal": 2637.06, "webOrders": 19, "googleSpend": 81.34, "googleConvValue": 1237.22 },
-    { "day": "2026-10-22", "webTotal": 881.62, "webOrders": 13, "googleSpend": 87.39, "googleConvValue": 121.42 },
-    { "day": "2026-10-23", "webTotal": 1038.03, "webOrders": 13, "googleSpend": 103.29, "googleConvValue": 785.46 },
-    { "day": "2026-10-24", "webTotal": 30.18, "webOrders": 1, "googleSpend": 81.13, "googleConvValue": 0.00 },
-    { "day": "2026-10-25", "webTotal": 1002.38, "webOrders": 12, "googleSpend": 135.11, "googleConvValue": 576.55 },
-    { "day": "2026-10-26", "webTotal": 681.05, "webOrders": 10, "googleSpend": 114.06, "googleConvValue": 575.00 },
-    { "day": "2026-10-27", "webTotal": 808.90, "webOrders": 7, "googleSpend": 121.24, "googleConvValue": 145.00 },
-    { "day": "2026-10-28", "webTotal": 119.25, "webOrders": 3, "googleSpend": 21.76, "googleConvValue": 0.00 }
+    {
+      "day": "2026-10-01",
+      "webTotal": 389.28,
+      "webOrders": 8,
+      "googleSpend": 289.73,
+      "googleConvValue": 722.98,
+      "webByChannel": {
+        "seo": 83.7,
+        "organico": 0,
+        "google": 305.58,
+        "meta": 0,
+        "email": 0,
+        "directo": 0
+      }
+    },
+    {
+      "day": "2026-10-02",
+      "webTotal": 2649.74,
+      "webOrders": 15,
+      "googleSpend": 276.7,
+      "googleConvValue": 613,
+      "webByChannel": {
+        "seo": 1118.25,
+        "organico": 0,
+        "google": 214.5,
+        "meta": 31.95,
+        "email": 1285.04,
+        "directo": 0
+      }
+    },
+    {
+      "day": "2026-10-03",
+      "webTotal": 1359.03,
+      "webOrders": 13,
+      "googleSpend": 154.61,
+      "googleConvValue": 594.55,
+      "webByChannel": {
+        "seo": 0,
+        "organico": 95.85,
+        "google": 678.38,
+        "meta": 0,
+        "email": 584.8,
+        "directo": 0
+      }
+    },
+    {
+      "day": "2026-10-04",
+      "webTotal": 632.46,
+      "webOrders": 9,
+      "googleSpend": 189.82,
+      "googleConvValue": 525.83,
+      "webByChannel": {
+        "seo": 31.95,
+        "organico": 35.5,
+        "google": 390.83,
+        "meta": 174.18,
+        "email": 0,
+        "directo": 0
+      }
+    },
+    {
+      "day": "2026-10-05",
+      "webTotal": 764.19,
+      "webOrders": 10,
+      "googleSpend": 128.5,
+      "googleConvValue": 477.7,
+      "webByChannel": {
+        "seo": 87.75,
+        "organico": 0,
+        "google": 267.3,
+        "meta": 197.04,
+        "email": 212.1,
+        "directo": 0
+      }
+    },
+    {
+      "day": "2026-10-06",
+      "webTotal": 532,
+      "webOrders": 6,
+      "googleSpend": 85.35,
+      "googleConvValue": 508.43,
+      "webByChannel": {
+        "seo": 339.3,
+        "organico": 0,
+        "google": 223.2,
+        "meta": 0,
+        "email": 0,
+        "directo": 0
+      }
+    },
+    {
+      "day": "2026-10-07",
+      "webTotal": 2226.35,
+      "webOrders": 6,
+      "googleSpend": 83.39,
+      "googleConvValue": 283.5,
+      "webByChannel": {
+        "seo": 51.95,
+        "organico": 0,
+        "google": 193.5,
+        "meta": 0,
+        "email": 1980.9,
+        "directo": 0
+      }
+    },
+    {
+      "day": "2026-10-08",
+      "webTotal": 546.33,
+      "webOrders": 8,
+      "googleSpend": 68.31,
+      "googleConvValue": 284.8,
+      "webByChannel": {
+        "seo": 191.7,
+        "organico": 0,
+        "google": 31.95,
+        "meta": 277.35,
+        "email": 0,
+        "directo": 61
+      }
+    },
+    {
+      "day": "2026-10-09",
+      "webTotal": 559.97,
+      "webOrders": 7,
+      "googleSpend": 108.47,
+      "googleConvValue": 189.78,
+      "webByChannel": {
+        "seo": 192.96,
+        "organico": 0,
+        "google": 66.5,
+        "meta": 201.06,
+        "email": 99.45,
+        "directo": 0
+      }
+    },
+    {
+      "day": "2026-10-10",
+      "webTotal": 564.48,
+      "webOrders": 9,
+      "googleSpend": 109.67,
+      "googleConvValue": 745.31,
+      "webByChannel": {
+        "seo": 0,
+        "organico": 0,
+        "google": 328.8,
+        "meta": 135.95,
+        "email": 66,
+        "directo": 0
+      }
+    },
+    {
+      "day": "2026-10-11",
+      "webTotal": 191.95,
+      "webOrders": 3,
+      "googleSpend": 125.93,
+      "googleConvValue": 184.14,
+      "webByChannel": {
+        "seo": 0,
+        "organico": 0,
+        "google": 28.35,
+        "meta": 163.6,
+        "email": 0,
+        "directo": 0
+      }
+    },
+    {
+      "day": "2026-10-12",
+      "webTotal": 763.01,
+      "webOrders": 9,
+      "googleSpend": 83.23,
+      "googleConvValue": 590.8,
+      "webByChannel": {
+        "seo": 0,
+        "organico": 0,
+        "google": 514.56,
+        "meta": 65.45,
+        "email": 0,
+        "directo": 183
+      }
+    },
+    {
+      "day": "2026-10-13",
+      "webTotal": 4146.56,
+      "webOrders": 47,
+      "googleSpend": 117.6,
+      "googleConvValue": 1222.54,
+      "webByChannel": {
+        "seo": 0,
+        "organico": 167.4,
+        "google": 1047.34,
+        "meta": 77.78,
+        "email": 2445.9,
+        "directo": 425.65
+      }
+    },
+    {
+      "day": "2026-10-14",
+      "webTotal": 1780.48,
+      "webOrders": 15,
+      "googleSpend": 95.17,
+      "googleConvValue": 1306.24,
+      "webByChannel": {
+        "seo": 65.7,
+        "organico": 0,
+        "google": 1299.67,
+        "meta": 270.18,
+        "email": 144.93,
+        "directo": 0
+      }
+    },
+    {
+      "day": "2026-10-15",
+      "webTotal": 2439.35,
+      "webOrders": 23,
+      "googleSpend": 76.87,
+      "googleConvValue": 1120.7,
+      "webByChannel": {
+        "seo": 0,
+        "organico": 0,
+        "google": 1079.79,
+        "meta": 182,
+        "email": 1095.21,
+        "directo": 82.35
+      }
+    },
+    {
+      "day": "2026-10-16",
+      "webTotal": 657.18,
+      "webOrders": 12,
+      "googleSpend": 83.96,
+      "googleConvValue": 428.3,
+      "webByChannel": {
+        "seo": 91.5,
+        "organico": 0,
+        "google": 350.31,
+        "meta": 64.48,
+        "email": 150.89,
+        "directo": 0
+      }
+    },
+    {
+      "day": "2026-10-17",
+      "webTotal": 2288.74,
+      "webOrders": 25,
+      "googleSpend": 80.58,
+      "googleConvValue": 982.94,
+      "webByChannel": {
+        "seo": 214,
+        "organico": 0,
+        "google": 995.26,
+        "meta": 138.5,
+        "email": 888.28,
+        "directo": 52.7
+      }
+    },
+    {
+      "day": "2026-10-18",
+      "webTotal": 1076.47,
+      "webOrders": 16,
+      "googleSpend": 89.56,
+      "googleConvValue": 368.5,
+      "webByChannel": {
+        "seo": 128.5,
+        "organico": 0,
+        "google": 291.75,
+        "meta": 109.5,
+        "email": 362.99,
+        "directo": 183.73
+      }
+    },
+    {
+      "day": "2026-10-19",
+      "webTotal": 1837.44,
+      "webOrders": 20,
+      "googleSpend": 78.43,
+      "googleConvValue": 861.62,
+      "webByChannel": {
+        "seo": 430.15,
+        "organico": 0,
+        "google": 657.18,
+        "meta": 120.2,
+        "email": 629.91,
+        "directo": 0
+      }
+    },
+    {
+      "day": "2026-10-20",
+      "webTotal": 4174.31,
+      "webOrders": 40,
+      "googleSpend": 102.62,
+      "googleConvValue": 1974.25,
+      "webByChannel": {
+        "seo": 329.4,
+        "organico": 0,
+        "google": 1765.92,
+        "meta": 238.65,
+        "email": 1639.11,
+        "directo": 169.28
+      }
+    },
+    {
+      "day": "2026-10-21",
+      "webTotal": 2637.06,
+      "webOrders": 19,
+      "googleSpend": 81.34,
+      "googleConvValue": 1237.22,
+      "webByChannel": {
+        "seo": 0,
+        "organico": 0,
+        "google": 1179.94,
+        "meta": 394,
+        "email": 426.73,
+        "directo": 668.34
+      }
+    },
+    {
+      "day": "2026-10-22",
+      "webTotal": 881.62,
+      "webOrders": 13,
+      "googleSpend": 87.39,
+      "googleConvValue": 121.42,
+      "webByChannel": {
+        "seo": 32.4,
+        "organico": 82.35,
+        "google": 195.21,
+        "meta": 559.03,
+        "email": 26.35,
+        "directo": 0
+      }
+    },
+    {
+      "day": "2026-10-23",
+      "webTotal": 1038.03,
+      "webOrders": 13,
+      "googleSpend": 103.29,
+      "googleConvValue": 785.46,
+      "webByChannel": {
+        "seo": 0,
+        "organico": 0,
+        "google": 517.38,
+        "meta": 520.65,
+        "email": 0,
+        "directo": 0
+      }
+    },
+    {
+      "day": "2026-10-24",
+      "webTotal": 30.18,
+      "webOrders": 1,
+      "googleSpend": 81.13,
+      "googleConvValue": 0,
+      "webByChannel": {
+        "seo": 0,
+        "organico": 0,
+        "google": 0,
+        "meta": 0,
+        "email": 30.18,
+        "directo": 0
+      }
+    },
+    {
+      "day": "2026-10-25",
+      "webTotal": 1002.38,
+      "webOrders": 12,
+      "googleSpend": 135.11,
+      "googleConvValue": 576.55,
+      "webByChannel": {
+        "seo": 144,
+        "organico": 0,
+        "google": 396.55,
+        "meta": 319.02,
+        "email": 142.81,
+        "directo": 0
+      }
+    },
+    {
+      "day": "2026-10-26",
+      "webTotal": 681.05,
+      "webOrders": 10,
+      "googleSpend": 114.06,
+      "googleConvValue": 575,
+      "webByChannel": {
+        "seo": 27.9,
+        "organico": 0,
+        "google": 350,
+        "meta": 106.45,
+        "email": 222.2,
+        "directo": 0
+      }
+    },
+    {
+      "day": "2026-10-27",
+      "webTotal": 808.9,
+      "webOrders": 7,
+      "googleSpend": 121.24,
+      "googleConvValue": 145,
+      "webByChannel": {
+        "seo": 399,
+        "organico": 0,
+        "google": 289.45,
+        "meta": 120.45,
+        "email": 0,
+        "directo": 0
+      }
+    },
+    {
+      "day": "2026-10-28",
+      "webTotal": 119.25,
+      "webOrders": 3,
+      "googleSpend": 21.76,
+      "googleConvValue": 0,
+      "webByChannel": {
+        "seo": 0,
+        "organico": 0,
+        "google": 31.95,
+        "meta": 87.3,
+        "email": 0,
+        "directo": 0
+      }
+    }
   ],
   "todayHourly": [
-    { "hour": 0, "webTotal": 0, "webOrders": 0 },
-    { "hour": 1, "webTotal": 0, "webOrders": 0 },
-    { "hour": 2, "webTotal": 0, "webOrders": 0 },
-    { "hour": 3, "webTotal": 0, "webOrders": 0 },
-    { "hour": 4, "webTotal": 0, "webOrders": 0 },
-    { "hour": 5, "webTotal": 0, "webOrders": 0 },
-    { "hour": 6, "webTotal": 0, "webOrders": 0 },
-    { "hour": 7, "webTotal": 0, "webOrders": 0 },
-    { "hour": 8, "webTotal": 0, "webOrders": 0 },
-    { "hour": 9, "webTotal": 0, "webOrders": 0 },
-    { "hour": 10, "webTotal": 31.95, "webOrders": 1 },
-    { "hour": 11, "webTotal": 87.30, "webOrders": 2 },
-    { "hour": 12, "webTotal": 0, "webOrders": 0 },
-    { "hour": 13, "webTotal": 0, "webOrders": 0 },
-    { "hour": 14, "webTotal": 0, "webOrders": 0 },
-    { "hour": 15, "webTotal": 0, "webOrders": 0 },
-    { "hour": 16, "webTotal": 0, "webOrders": 0 },
-    { "hour": 17, "webTotal": 0, "webOrders": 0 },
-    { "hour": 18, "webTotal": 0, "webOrders": 0 },
-    { "hour": 19, "webTotal": 0, "webOrders": 0 },
-    { "hour": 20, "webTotal": 0, "webOrders": 0 },
-    { "hour": 21, "webTotal": 0, "webOrders": 0 },
-    { "hour": 22, "webTotal": 0, "webOrders": 0 },
-    { "hour": 23, "webTotal": 0, "webOrders": 0 }
+    {
+      "hour": 0,
+      "webTotal": 0,
+      "webOrders": 0,
+      "webByChannel": {
+        "seo": 0,
+        "organico": 0,
+        "google": 0,
+        "meta": 0,
+        "email": 0,
+        "directo": 0
+      }
+    },
+    {
+      "hour": 1,
+      "webTotal": 0,
+      "webOrders": 0,
+      "webByChannel": {
+        "seo": 0,
+        "organico": 0,
+        "google": 0,
+        "meta": 0,
+        "email": 0,
+        "directo": 0
+      }
+    },
+    {
+      "hour": 2,
+      "webTotal": 0,
+      "webOrders": 0,
+      "webByChannel": {
+        "seo": 0,
+        "organico": 0,
+        "google": 0,
+        "meta": 0,
+        "email": 0,
+        "directo": 0
+      }
+    },
+    {
+      "hour": 3,
+      "webTotal": 0,
+      "webOrders": 0,
+      "webByChannel": {
+        "seo": 0,
+        "organico": 0,
+        "google": 0,
+        "meta": 0,
+        "email": 0,
+        "directo": 0
+      }
+    },
+    {
+      "hour": 4,
+      "webTotal": 0,
+      "webOrders": 0,
+      "webByChannel": {
+        "seo": 0,
+        "organico": 0,
+        "google": 0,
+        "meta": 0,
+        "email": 0,
+        "directo": 0
+      }
+    },
+    {
+      "hour": 5,
+      "webTotal": 0,
+      "webOrders": 0,
+      "webByChannel": {
+        "seo": 0,
+        "organico": 0,
+        "google": 0,
+        "meta": 0,
+        "email": 0,
+        "directo": 0
+      }
+    },
+    {
+      "hour": 6,
+      "webTotal": 0,
+      "webOrders": 0,
+      "webByChannel": {
+        "seo": 0,
+        "organico": 0,
+        "google": 0,
+        "meta": 0,
+        "email": 0,
+        "directo": 0
+      }
+    },
+    {
+      "hour": 7,
+      "webTotal": 0,
+      "webOrders": 0,
+      "webByChannel": {
+        "seo": 0,
+        "organico": 0,
+        "google": 0,
+        "meta": 0,
+        "email": 0,
+        "directo": 0
+      }
+    },
+    {
+      "hour": 8,
+      "webTotal": 0,
+      "webOrders": 0,
+      "webByChannel": {
+        "seo": 0,
+        "organico": 0,
+        "google": 0,
+        "meta": 0,
+        "email": 0,
+        "directo": 0
+      }
+    },
+    {
+      "hour": 9,
+      "webTotal": 0,
+      "webOrders": 0,
+      "webByChannel": {
+        "seo": 0,
+        "organico": 0,
+        "google": 0,
+        "meta": 0,
+        "email": 0,
+        "directo": 0
+      }
+    },
+    {
+      "hour": 10,
+      "webTotal": 31.95,
+      "webOrders": 1,
+      "webByChannel": {
+        "seo": 0,
+        "organico": 0,
+        "google": 0,
+        "meta": 31.95,
+        "email": 0,
+        "directo": 0
+      }
+    },
+    {
+      "hour": 11,
+      "webTotal": 87.3,
+      "webOrders": 2,
+      "webByChannel": {
+        "seo": 0,
+        "organico": 0,
+        "google": 31.95,
+        "meta": 55.35,
+        "email": 0,
+        "directo": 0
+      }
+    },
+    {
+      "hour": 12,
+      "webTotal": 0,
+      "webOrders": 0,
+      "webByChannel": {
+        "seo": 0,
+        "organico": 0,
+        "google": 0,
+        "meta": 0,
+        "email": 0,
+        "directo": 0
+      }
+    },
+    {
+      "hour": 13,
+      "webTotal": 0,
+      "webOrders": 0,
+      "webByChannel": {
+        "seo": 0,
+        "organico": 0,
+        "google": 0,
+        "meta": 0,
+        "email": 0,
+        "directo": 0
+      }
+    },
+    {
+      "hour": 14,
+      "webTotal": 0,
+      "webOrders": 0,
+      "webByChannel": {
+        "seo": 0,
+        "organico": 0,
+        "google": 0,
+        "meta": 0,
+        "email": 0,
+        "directo": 0
+      }
+    },
+    {
+      "hour": 15,
+      "webTotal": 0,
+      "webOrders": 0,
+      "webByChannel": {
+        "seo": 0,
+        "organico": 0,
+        "google": 0,
+        "meta": 0,
+        "email": 0,
+        "directo": 0
+      }
+    },
+    {
+      "hour": 16,
+      "webTotal": 0,
+      "webOrders": 0,
+      "webByChannel": {
+        "seo": 0,
+        "organico": 0,
+        "google": 0,
+        "meta": 0,
+        "email": 0,
+        "directo": 0
+      }
+    },
+    {
+      "hour": 17,
+      "webTotal": 0,
+      "webOrders": 0,
+      "webByChannel": {
+        "seo": 0,
+        "organico": 0,
+        "google": 0,
+        "meta": 0,
+        "email": 0,
+        "directo": 0
+      }
+    },
+    {
+      "hour": 18,
+      "webTotal": 0,
+      "webOrders": 0,
+      "webByChannel": {
+        "seo": 0,
+        "organico": 0,
+        "google": 0,
+        "meta": 0,
+        "email": 0,
+        "directo": 0
+      }
+    },
+    {
+      "hour": 19,
+      "webTotal": 0,
+      "webOrders": 0,
+      "webByChannel": {
+        "seo": 0,
+        "organico": 0,
+        "google": 0,
+        "meta": 0,
+        "email": 0,
+        "directo": 0
+      }
+    },
+    {
+      "hour": 20,
+      "webTotal": 0,
+      "webOrders": 0,
+      "webByChannel": {
+        "seo": 0,
+        "organico": 0,
+        "google": 0,
+        "meta": 0,
+        "email": 0,
+        "directo": 0
+      }
+    },
+    {
+      "hour": 21,
+      "webTotal": 0,
+      "webOrders": 0,
+      "webByChannel": {
+        "seo": 0,
+        "organico": 0,
+        "google": 0,
+        "meta": 0,
+        "email": 0,
+        "directo": 0
+      }
+    },
+    {
+      "hour": 22,
+      "webTotal": 0,
+      "webOrders": 0,
+      "webByChannel": {
+        "seo": 0,
+        "organico": 0,
+        "google": 0,
+        "meta": 0,
+        "email": 0,
+        "directo": 0
+      }
+    },
+    {
+      "hour": 23,
+      "webTotal": 0,
+      "webOrders": 0,
+      "webByChannel": {
+        "seo": 0,
+        "organico": 0,
+        "google": 0,
+        "meta": 0,
+        "email": 0,
+        "directo": 0
+      }
+    }
   ],
   "topProductsCurrentMonth": [
-    { "title": "Green Emerald Picual 500ML", "sales": 11076.00, "orders": 141 },
-    { "title": "Imagine Picual 500ml", "sales": 4514.00, "orders": 68 },
-    { "title": "Imagine Royal 500ml", "sales": 3069.00, "orders": 43 },
-    { "title": "Pack Gemas | 3", "sales": 3038.00, "orders": 19 },
-    { "title": "Pack | Picual 3", "sales": 2653.50, "orders": 26 },
-    { "title": "Estuche regalo Imagine | 3", "sales": 2058.00, "orders": 2 }
-  ]
+    {
+      "title": "Green Emerald Picual 500ML",
+      "sales": 11076,
+      "orders": 141
+    },
+    {
+      "title": "Imagine Picual 500ml",
+      "sales": 4514,
+      "orders": 68
+    },
+    {
+      "title": "Imagine Royal 500ml",
+      "sales": 3069,
+      "orders": 43
+    },
+    {
+      "title": "Pack Gemas | 3",
+      "sales": 3038,
+      "orders": 19
+    },
+    {
+      "title": "Pack | Picual 3",
+      "sales": 2653.5,
+      "orders": 26
+    },
+    {
+      "title": "Estuche regalo Imagine | 3",
+      "sales": 2058,
+      "orders": 2
+    }
+  ],
+  "_attribution": "Reparto por canal (webByChannel) calculado desde los atributos _siana_* de 379 pedidos reales de octubre, clasificados por el motor lib/attribution.ts."
 }

@@ -57,28 +57,46 @@ Abre <http://localhost:3000>. Sin `.env.local`, verás el snapshot de datos real
 | `GOOGLE_ADS_CUSTOMER_ID` | Cuenta España (`7701012791`). |
 | `PANEL_TIMEZONE` | Zona del negocio (`Europe/Madrid`). |
 
-## Sobre la atribución por canal
+## Atribución por canal (propia)
 
-Shopify **no trae origen** en ~94% de los pedidos (el `order_referrer_source` llega
-vacío). Por eso el panel muestra, de forma honesta, lo que **sí** es medible hoy:
-ventas web totales (Shopify) y la parte **atribuida a Google Ads** (según Google). El
-desglose fino de los 6 canales (SEO, Orgánico, Meta, Email, Directo, Directo) exige
-**captura de UTMs + atribución propia** — la capa «ledger» de la fase siguiente
-(ver `CONTEXT-ledger-ingesta.md`, aún no incluido).
+Shopify no trae origen fiable (`order_referrer_source` llega vacío en ~94% de los
+pedidos, y el *customer journey* viene casi siempre vacío por Shop Pay + RGPD). Pero la
+tienda **ya captura** los parámetros de campaña en cada pedido: su tracking escribe
+atributos `_siana_*` (gclid, gbraid, fbclid/fbc, utm_source/medium/campaign, referrer,
+landing_page…) como *cart attributes*, que quedan en `order.customAttributes`.
+
+El motor `lib/attribution.ts` lee esos atributos y clasifica cada pedido en uno de los
+**6 canales** por last-touch, con esta prioridad:
+
+1. `gclid` / `gbraid` → **Google Ads**
+2. `fbclid` / `fbc` → **Meta Ads**
+3. `utm_medium` de pago (`cpc`, `paid`, `paidmedia`…) → Google o Meta según `utm_source`
+4. `utm_medium=email` o fuente tipo newsletter/Connectif → **Email**
+5. `utm_source=google` orgánico (`product_sync`/`srsltid`) o referrer de buscador → **SEO**
+6. referrer/fuente social sin marcador de pago → **Orgánico**
+7. resto con campaña → **Orgánico**; sin señales → **Directo**
+
+El proveedor `lib/shopify.ts` agrega las ventas web por canal (mes/día/hora). Las reglas
+están centralizadas en `lib/attribution.ts`: ajustar una (p. ej. si `product_sync` debe
+contar como orgánico aun con gclid) es cambiar una línea.
+
+> Octubre 2026 (379 pedidos reales clasificados): Google Ads 37% · Email 34% ·
+> Meta Ads 12% · SEO 11% · Directo 5% · Orgánico 1%.
 
 ## Estructura
 
 ```
 app/            layout, página (server), estilos globales, fuentes (next/font)
 components/      Panel (tabs), vistas, gráficos SVG, UI, tooltip
-lib/            tipos, formato, tiempo, proveedores (shopify, googleAds) y agregador
+lib/            tipos, formato, tiempo, atribución, proveedores (shopify, googleAds), agregador
 data/           snapshot.json  (datos reales de respaldo)
 prototype/      maqueta HTML original (referencia visual)
 ```
 
 ## Pendiente (fase 2)
 
-- **Meta Ads** — adaptador listo; falta conectar la cuenta y añadir credenciales.
+- **Meta Ads** — adaptador listo; falta conectar la cuenta y añadir credenciales
+  (inversión/ROAS de Meta, para cruzar con las ventas ya atribuidas a Meta).
 - **Amazon** — SP-API (ventas) + Amazon Ads API (ACOS/TACOS).
-- **Atribución propia por canal** — captura de UTMs + modelo (capa «ledger», Supabase
-  opcional como almacén). Convierte el gran bloque «no atribuido» en los 6 canales.
+- **Supabase (opcional)** — almacén/caché del histórico por canal, para no recalcular
+  6 meses de pedidos en cada carga. El panel no lo necesita para funcionar.

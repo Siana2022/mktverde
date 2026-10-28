@@ -1,5 +1,8 @@
 // Modelo de datos del panel. Todos los importes en EUR.
 
+import type { ChannelSplit } from "./attribution";
+export type { Channel, ChannelSplit } from "./attribution";
+
 export interface MonthPoint {
   key: string; // '2026-10'
   label: string; // 'oct'
@@ -13,6 +16,7 @@ export interface MonthPoint {
   googleConversions: number;
   googleClicks: number;
   googleImpressions: number;
+  webByChannel?: ChannelSplit; // ventas web repartidas por canal (atribución propia)
   partial?: boolean; // mes en curso, incompleto
 }
 
@@ -22,12 +26,14 @@ export interface DayPoint {
   webOrders: number;
   googleSpend: number;
   googleConvValue: number;
+  webByChannel?: ChannelSplit;
 }
 
 export interface HourPoint {
   hour: number; // 0..23 (hora local del negocio)
   webTotal: number;
   webOrders: number;
+  webByChannel?: ChannelSplit;
 }
 
 export interface Product {
@@ -46,6 +52,7 @@ export interface SourceStatus {
 export interface PanelData {
   generatedAt: string; // ISO
   live: boolean; // true si al menos una fuente es en vivo
+  attribution: boolean; // true si hay reparto por canal (atributos _siana_*)
   sources: SourceStatus;
   shopName: string;
   currency: string;
