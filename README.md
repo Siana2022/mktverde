@@ -38,6 +38,9 @@ npm run dev
 
 Abre <http://localhost:3000>. Sin `.env.local`, verás el snapshot de datos reales.
 
+> **Guía de puesta en marcha completa (pasar a «En vivo»):** [`docs/PUESTA-EN-MARCHA.md`](docs/PUESTA-EN-MARCHA.md)
+> — checklist paso a paso de credenciales (Shopify, Meta, Google Ads) y del conector MCP.
+
 ## Despliegue en Vercel
 
 1. Importa el repo en Vercel (framework detectado: Next.js, sin configuración extra).
