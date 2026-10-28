@@ -1,112 +1,13 @@
-// Servidor MCP de Verde Esmeralda: expone los datos de ventas (web Shopify +
-// Google Ads, con atribución por canal) como herramientas para que Claude
-// consulte y ayude a tomar decisiones. Reutiliza la misma capa de datos del panel.
+// Servidor MCP de Verde Esmeralda (transporte stdio, para el bundle .mcpb de
+// Claude Desktop). Reutiliza la capa de datos del panel y las herramientas
+// compartidas en lib/mcpTools.ts (las mismas que usa la ruta HTTP de Vercel).
 
 import { Server } from "@modelcontextprotocol/sdk/server/index.js";
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
 import { CallToolRequestSchema, ListToolsRequestSchema } from "@modelcontextprotocol/sdk/types.js";
 import { getPanelData } from "../../lib/data";
-import { CHANNELS, CHANNEL_META, type ChannelSplit } from "../../lib/attribution";
-import type { PanelData, MonthPoint } from "../../lib/types";
-
-const round = (n: number) => Math.round(n * 100) / 100;
-const roasOf = (m: { googleSpend: number; googleConvValue: number }) =>
-  m.googleSpend ? round(m.googleConvValue / m.googleSpend) : 0;
-
-function splitRows(split: ChannelSplit | undefined) {
-  if (!split) return null;
-  const total = CHANNELS.reduce((a, c) => a + (split[c] || 0), 0) || 1;
-  return CHANNELS.map((c) => ({
-    canal: c,
-    etiqueta: CHANNEL_META[c].label,
-    ventas_eur: round(split[c] || 0),
-    porcentaje: round(((split[c] || 0) / total) * 100),
-  })).sort((a, b) => b.ventas_eur - a.ventas_eur);
-}
-
-function monthSummary(m: MonthPoint) {
-  return {
-    mes: m.label,
-    en_curso: Boolean(m.partial),
-    ventas_web_eur: round(m.webTotal),
-    pedidos: m.webOrders,
-    ticket_medio_eur: round(m.aov),
-    google_ads: {
-      inversion_eur: round(m.googleSpend),
-      valor_atribuido_google_eur: round(m.googleConvValue),
-      roas: roasOf(m),
-      clics: m.googleClicks,
-    },
-    ventas_por_canal: splitRows(m.webByChannel),
-  };
-}
-
-// ── Payloads de cada herramienta (calculados a partir de PanelData) ──
-function resumen(d: PanelData) {
-  const m = d.months[d.months.length - 1];
-  const upto = d.todayHourly.filter((h) => h.hour <= d.nowHour);
-  const hoyTot = upto.reduce((a, h) => a + h.webTotal, 0);
-  const hoyPed = upto.reduce((a, h) => a + h.webOrders, 0);
-  const best = upto.reduce((b, h) => (h.webTotal > b.webTotal ? h : b), { hour: 0, webTotal: 0 });
-  return {
-    tienda: d.shopName,
-    moneda: d.currency,
-    actualizado: d.generatedAt,
-    en_vivo: d.live,
-    fuentes: d.sources,
-    nota: d.live ? "Datos en vivo." : "Instantánea de datos reales (sin credenciales en vivo).",
-    mes_actual: monthSummary(m),
-    hoy: {
-      corte_hora: d.nowHour,
-      facturado_eur: round(hoyTot),
-      pedidos: hoyPed,
-      hora_pico: best.webTotal > 0 ? `${best.hour}:00` : null,
-    },
-    top_productos: d.topProductsCurrentMonth.map((p, i) => ({ puesto: i + 1, producto: p.title, ventas_eur: round(p.sales), pedidos: p.orders })),
-  };
-}
-
-function mensuales(d: PanelData) {
-  return { tienda: d.shopName, moneda: d.currency, meses: d.months.map(monthSummary) };
-}
-
-function diarias(d: PanelData) {
-  return {
-    tienda: d.shopName,
-    mes: d.months[d.months.length - 1].label,
-    dias: d.currentMonthDaily.map((x) => ({
-      dia: x.day,
-      ventas_web_eur: round(x.webTotal),
-      pedidos: x.webOrders,
-      google_inversion_eur: round(x.googleSpend),
-      ventas_por_canal: splitRows(x.webByChannel),
-    })),
-  };
-}
-
-function intradia(d: PanelData) {
-  const upto = d.todayHourly.filter((h) => h.hour <= d.nowHour);
-  return {
-    tienda: d.shopName,
-    fecha: d.today,
-    corte_hora: d.nowHour,
-    facturado_hoy_eur: round(upto.reduce((a, h) => a + h.webTotal, 0)),
-    pedidos_hoy: upto.reduce((a, h) => a + h.webOrders, 0),
-    por_hora: d.todayHourly.map((h) => ({ hora: h.hour, ventas_web_eur: round(h.webTotal), pedidos: h.webOrders, ventas_por_canal: splitRows(h.webByChannel) })),
-  };
-}
-
-function top(d: PanelData) {
-  return { tienda: d.shopName, mes: d.months[d.months.length - 1].label, top_productos: d.topProductsCurrentMonth.map((p, i) => ({ puesto: i + 1, producto: p.title, ventas_eur: round(p.sales), pedidos: p.orders })) };
-}
-
-const TOOLS = [
-  { name: "resumen_ventas", description: "Resumen de decisión: ventas web del mes, mezcla por canal (atribución propia), KPIs de Google Ads (inversión/ROAS), el día de hoy y top productos. Empieza por aquí.", fn: resumen },
-  { name: "ventas_mensuales", description: "Histórico de los últimos 6 meses: ventas web, pedidos, ticket medio, reparto por canal e inversión/ROAS de Google Ads por mes. Útil para tendencias.", fn: mensuales },
-  { name: "ventas_diarias", description: "Ventas del mes en curso, día a día, con reparto por canal e inversión de Google por día.", fn: diarias },
-  { name: "intradia_hoy", description: "Ventas de hoy hora a hora, con reparto por canal y acumulado hasta ahora.", fn: intradia },
-  { name: "top_productos", description: "Productos más vendidos del mes en curso por facturación.", fn: top },
-] as const;
+import { PANEL_TOOLS } from "../../lib/mcpTools";
+import type { PanelData } from "../../lib/types";
 
 // Cache de PanelData en proceso (5 min) para no repetir llamadas a las APIs.
 let cache: { at: number; data: Promise<PanelData> } | null = null;
@@ -118,15 +19,15 @@ function panelData(): Promise<PanelData> {
 const server = new Server({ name: "verde-esmeralda-ventas", version: "1.0.0" }, { capabilities: { tools: {} } });
 
 server.setRequestHandler(ListToolsRequestSchema, async () => ({
-  tools: TOOLS.map((t) => ({ name: t.name, description: t.description, inputSchema: { type: "object", properties: {}, additionalProperties: false } })),
+  tools: PANEL_TOOLS.map((t) => ({ name: t.name, description: t.description, inputSchema: { type: "object", properties: {}, additionalProperties: false } })),
 }));
 
 server.setRequestHandler(CallToolRequestSchema, async (req) => {
-  const tool = TOOLS.find((t) => t.name === req.params.name);
+  const tool = PANEL_TOOLS.find((t) => t.name === req.params.name);
   if (!tool) return { content: [{ type: "text", text: `Herramienta desconocida: ${req.params.name}` }], isError: true };
   try {
     const data = await panelData();
-    return { content: [{ type: "text", text: JSON.stringify(tool.fn(data), null, 2) }] };
+    return { content: [{ type: "text", text: JSON.stringify(tool.run(data), null, 2) }] };
   } catch (err) {
     return { content: [{ type: "text", text: `Error obteniendo datos: ${err instanceof Error ? err.message : String(err)}` }], isError: true };
   }

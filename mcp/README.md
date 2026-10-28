@@ -40,6 +40,22 @@ El bundle se genera con esbuild resolviendo el alias `@/` de la app; el servidor
 `getPanelData()` de `../lib`, así que cualquier mejora en la capa de datos del panel
 (nuevas fuentes, Meta, Amazon) aparece aquí sin tocar el servidor MCP.
 
-> Alternativa a futuro: en lugar del `.mcpb` local, exponer el mismo servidor como
-> **MCP remoto** (ruta HTTP en Vercel) y añadirlo como *custom connector* en claude.ai
-> (web y móvil), usando las credenciales ya configuradas en Vercel.
+## MCP remoto (claude.ai web y móvil)
+
+Las mismas herramientas se exponen también como **MCP remoto** desde el propio panel de
+Vercel, en `app/api/mcp/[secret]/route.ts` (reutiliza `lib/mcpTools.ts`). Así se usa
+desde **claude.ai** (web y móvil) sin instalar nada y con las credenciales ya puestas en
+Vercel.
+
+Pasos:
+1. En Vercel → *Settings → Environment Variables* añade `MCP_SECRET` con un valor largo
+   y aleatorio (`openssl rand -hex 24`). Sin él, el endpoint responde 404 (cerrado).
+   Redeploy.
+2. En **claude.ai → Settings → Connectors → Add custom connector**, pega la URL:
+   `https://TU-APP.vercel.app/api/mcp/EL_SECRETO`
+3. Pregunta a Claude como con el `.mcpb`.
+
+La autenticación es el **secreto dentro de la URL** (no hace falta OAuth). Trátala como
+una credencial: quien tenga la URL completa puede leer los datos de ventas. Si más
+adelante quieres control de acceso real (por usuario), se añade OAuth sobre `mcp-handler`
+(`withMcpAuth`).

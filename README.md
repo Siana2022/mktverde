@@ -56,6 +56,7 @@ Abre <http://localhost:3000>. Sin `.env.local`, verás el snapshot de datos real
 | `GOOGLE_ADS_LOGIN_CUSTOMER_ID` | MCC (`2333383997`). |
 | `GOOGLE_ADS_CUSTOMER_ID` | Cuenta España (`7701012791`). |
 | `PANEL_TIMEZONE` | Zona del negocio (`Europe/Madrid`). |
+| `MCP_SECRET` | Secreto del conector MCP remoto (`/api/mcp/<secreto>`). Sin él, cerrado (404). |
 
 ## Atribución por canal (propia)
 
@@ -86,12 +87,22 @@ contar como orgánico aun con gclid) es cambiar una línea.
 ## Estructura
 
 ```
-app/            layout, página (server), estilos globales, fuentes (next/font)
+app/            layout, página (server), estilos, fuentes, y api/mcp (MCP remoto)
 components/      Panel (tabs), vistas, gráficos SVG, UI, tooltip
-lib/            tipos, formato, tiempo, atribución, proveedores (shopify, googleAds), agregador
+lib/            tipos, formato, tiempo, atribución, proveedores, agregador, mcpTools
 data/           snapshot.json  (datos reales de respaldo)
+mcp/            servidor MCP + bundle .mcpb (Claude Desktop); comparte lib/
 prototype/      maqueta HTML original (referencia visual)
 ```
+
+## Claude (MCP)
+
+Las ventas se consultan desde Claude mediante un servidor MCP que comparte la capa de
+datos del panel (`lib/mcpTools.ts`):
+
+- **Claude Desktop:** instala `mcp/dist/verde-esmeralda-ventas.mcpb` (ver `mcp/README.md`).
+- **claude.ai (web/móvil):** añade un *custom connector* con la URL
+  `https://TU-APP.vercel.app/api/mcp/<MCP_SECRET>` (pon `MCP_SECRET` en Vercel primero).
 
 ## Pendiente (fase 2)
 
