@@ -76,6 +76,48 @@ export function WebView({ data }: { data: PanelData }) {
         </div>
       </section>
 
+      <section>
+        <div className="card">
+          <h3>Rendimiento por plataforma de pago</h3>
+          <div className="cap">Inversión y retorno · {mLong(m)}</div>
+          <table className="ptable">
+            <tbody>
+              <tr>
+                <td style={{ color: "var(--muted)", fontWeight: 500 }}>Plataforma</td>
+                <td style={{ color: "var(--muted)", fontWeight: 500, textAlign: "right" }}>Inversión</td>
+                <td style={{ color: "var(--muted)", fontWeight: 500, textAlign: "right" }}>ROAS (plataforma)</td>
+                <td style={{ color: "var(--muted)", fontWeight: 500, textAlign: "right" }}>Ventas atribuidas*</td>
+              </tr>
+              <tr>
+                <td><span className="sw" style={{ background: "var(--c-google)", display: "inline-block", marginRight: 7 }} />Google Ads</td>
+                <td className="num" style={{ textAlign: "right" }}>{eur(m.googleSpend)}</td>
+                <td className="num" style={{ textAlign: "right" }}>{roas(m.googleSpend ? m.googleConvValue / m.googleSpend : 0)}</td>
+                <td className="num" style={{ textAlign: "right" }}>{eur(split.google)}</td>
+              </tr>
+              <tr>
+                <td><span className="sw" style={{ background: "var(--c-meta)", display: "inline-block", marginRight: 7 }} />Meta Ads</td>
+                {m.metaSpend === undefined ? (
+                  <>
+                    <td colSpan={2} style={{ color: "var(--faint)" }}>pendiente de conectar (fase 2)</td>
+                    <td className="num" style={{ textAlign: "right" }}>{eur(split.meta)}</td>
+                  </>
+                ) : (
+                  <>
+                    <td className="num" style={{ textAlign: "right" }}>{eur(m.metaSpend)}</td>
+                    <td className="num" style={{ textAlign: "right" }}>{roas(m.metaSpend ? (m.metaConvValue || 0) / m.metaSpend : 0)}</td>
+                    <td className="num" style={{ textAlign: "right" }}>{eur(split.meta)}</td>
+                  </>
+                )}
+              </tr>
+            </tbody>
+          </table>
+          <div className="note" style={{ marginTop: 10 }}>
+            <span>*</span>
+            <span>Ventas atribuidas por nuestra atribución propia (UTMs del pedido). El «ROAS (plataforma)» usa el valor que cada plataforma se adjudica, que suele ser más optimista.</span>
+          </div>
+        </div>
+      </section>
+
       <section className="grid">
         <div className="card">
           <h3>Facturación web · histórico</h3>

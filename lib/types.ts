@@ -16,6 +16,9 @@ export interface MonthPoint {
   googleConversions: number;
   googleClicks: number;
   googleImpressions: number;
+  // Meta Ads (fase 2). undefined = no conectado; número = dato real (puede ser 0).
+  metaSpend?: number; // inversión Meta Ads
+  metaConvValue?: number; // valor de conversión atribuido por Meta
   webByChannel?: ChannelSplit; // ventas web repartidas por canal (atribución propia)
   partial?: boolean; // mes en curso, incompleto
 }

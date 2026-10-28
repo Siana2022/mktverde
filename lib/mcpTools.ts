@@ -32,6 +32,14 @@ function monthSummary(m: MonthPoint) {
       roas: roasOf(m),
       clics: m.googleClicks,
     },
+    meta_ads:
+      m.metaSpend === undefined
+        ? "pendiente de conectar"
+        : {
+            inversion_eur: round(m.metaSpend),
+            valor_atribuido_meta_eur: round(m.metaConvValue || 0),
+            roas: m.metaSpend ? round((m.metaConvValue || 0) / m.metaSpend) : 0,
+          },
     ventas_por_canal: splitRows(m.webByChannel),
   };
 }

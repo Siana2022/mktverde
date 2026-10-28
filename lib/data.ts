@@ -5,6 +5,7 @@ import snapshot from "@/data/snapshot.json";
 import type { PanelData, MonthPoint, DayPoint, HourPoint, Product } from "./types";
 import { getShopifyAggregates, shopifyConfigured } from "./shopify";
 import { getGoogleAds, googleAdsConfigured, type GoogleMetrics } from "./googleAds";
+import { getMeta } from "./meta";
 import { nowInTz, lastNMonthKeys, monthKeyToLabel } from "./time";
 
 const EMPTY_G: GoogleMetrics = { spend: 0, convValue: 0, conversions: 0, clicks: 0, impressions: 0 };
@@ -46,9 +47,10 @@ export async function getPanelData(): Promise<PanelData> {
   const monthKeys = lastNMonthKeys(monthKey, 6);
   const sinceDay = `${monthKeys[0]}-01`;
 
-  const [shop, google] = await Promise.all([
+  const [shop, google, meta] = await Promise.all([
     getShopifyAggregates(monthKeys, monthKey, today, tz),
     getGoogleAds(sinceDay, today),
+    getMeta(sinceDay, today),
   ]);
 
   // Shopify es la columna vertebral. Si no hay datos en vivo de Shopify,
@@ -60,6 +62,7 @@ export async function getPanelData(): Promise<PanelData> {
 
   const months: MonthPoint[] = shop.months.map((m) => {
     const gm = g(m.key);
+    const mm = meta?.byMonth.get(m.key);
     return {
       key: m.key,
       label: monthKeyToLabel(m.key),
@@ -73,6 +76,8 @@ export async function getPanelData(): Promise<PanelData> {
       googleConversions: gm.conversions,
       googleClicks: gm.clicks,
       googleImpressions: gm.impressions,
+      metaSpend: mm ? mm.spend : undefined,
+      metaConvValue: mm ? mm.convValue : undefined,
       webByChannel: m.webByChannel,
       partial: m.key === monthKey,
     };
@@ -87,7 +92,7 @@ export async function getPanelData(): Promise<PanelData> {
     generatedAt: new Date().toISOString(),
     live: true,
     attribution: true,
-    sources: { shopify: true, googleAds: Boolean(google), amazon: false, meta: false },
+    sources: { shopify: true, googleAds: Boolean(google), amazon: false, meta: Boolean(meta) },
     shopName: snapshot.shopName,
     currency: snapshot.currency,
     timezone: tz,
