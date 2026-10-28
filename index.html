@@ -1,0 +1,362 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Panel Verde Esmeralda</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<style>
+  :root{
+    --bg:#f7f6f1; --surface:#ffffff; --surface-2:#f1efe8; --line:#e3e1d7;
+    --ink:#1b1a16; --muted:#6c6a5f; --faint:#9a988c;
+    --accent:#5b7a2e; --accent-soft:#eef2e3; --amz:#e4891b; --amz-soft:#fbead2;
+    --c-seo:#1baf7a; --c-org:#eda100; --c-google:#2a78d6; --c-meta:#e87ba4; --c-email:#eb6834; --c-directo:#8a8f98;
+    --good:#2e7d4f; --warn:#b5761a; --bad:#c0453b;
+    --f-disp:"Fraunces",Georgia,serif; --f-body:"IBM Plex Sans",system-ui,sans-serif;
+    color-scheme:light;
+  }
+  @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+    --bg:#15150f; --surface:#1e1e17; --surface-2:#26261d; --line:#34332a;
+    --ink:#f0efe6; --muted:#b4b2a4; --faint:#7d7b6e;
+    --accent:#a7c76a; --accent-soft:#2a301b; --amz:#f0a84a; --amz-soft:#39280f;
+    --c-seo:#199e70; --c-org:#c98500; --c-google:#3987e5; --c-meta:#d55181; --c-email:#d95926; --c-directo:#7b8089;
+    --good:#4caf7a; --warn:#d99a36; --bad:#e2695e; color-scheme:dark;
+  }}
+  :root[data-theme="dark"]{
+    --bg:#15150f; --surface:#1e1e17; --surface-2:#26261d; --line:#34332a;
+    --ink:#f0efe6; --muted:#b4b2a4; --faint:#7d7b6e;
+    --accent:#a7c76a; --accent-soft:#2a301b; --amz:#f0a84a; --amz-soft:#39280f;
+    --c-seo:#199e70; --c-org:#c98500; --c-google:#3987e5; --c-meta:#d55181; --c-email:#d95926; --c-directo:#7b8089;
+    --good:#4caf7a; --warn:#d99a36; --bad:#e2695e; color-scheme:dark;
+  }
+  *{box-sizing:border-box}
+  body{background:var(--bg);color:var(--ink);font-family:var(--f-body);line-height:1.45;margin:0}
+  .wrap{max-width:1160px;margin:0 auto;padding-inline:max(16px,env(safe-area-inset-left,0px))}
+  .num{font-variant-numeric:tabular-nums}
+  h1,h2,h3{font-family:var(--f-disp);font-weight:600;text-wrap:balance;margin:0}
+  header.top{position:sticky;top:0;z-index:9;background:var(--bg);border-bottom:1px solid var(--line)}
+  .head-in{display:flex;flex-wrap:wrap;align-items:center;gap:11px 16px;padding-block:13px}
+  .brand{display:flex;align-items:center;gap:11px;margin-right:auto}
+  .logo{width:34px;height:34px;border-radius:9px;background:var(--accent);display:grid;place-items:center;color:#fff;font-family:var(--f-disp);font-weight:600;font-size:18px}
+  .brand .t1{font-family:var(--f-disp);font-size:18px;line-height:1.1}
+  .brand .t2{font-size:12px;color:var(--muted)}
+  .demo{font-size:10px;letter-spacing:.07em;text-transform:uppercase;background:var(--warn);color:#fff;padding:3px 7px;border-radius:5px;font-weight:600}
+  .tabs{display:flex;gap:5px;background:var(--surface-2);border-radius:10px;padding:4px}
+  .tab{border:0;background:transparent;color:var(--muted);font:inherit;font-weight:500;font-size:13px;padding:7px 14px;border-radius:7px;cursor:pointer}
+  .tab[aria-selected="true"]{background:var(--surface);color:var(--ink);box-shadow:0 1px 2px rgba(0,0,0,.08)}
+  main{padding-block:18px 40px;display:flex;flex-direction:column;gap:16px}
+  .banner{background:var(--accent-soft);border:1px solid color-mix(in srgb,var(--accent) 30%,transparent);border-radius:11px;padding:10px 14px;font-size:12.5px;display:flex;gap:9px;align-items:center}
+  .kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+  .kpi{background:var(--surface);border:1px solid var(--line);border-radius:13px;padding:15px 16px;display:flex;flex-direction:column;gap:3px;min-width:0}
+  .kpi.amz{border-color:color-mix(in srgb,var(--amz) 45%,var(--line))}
+  .kpi .lab{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;font-weight:500}
+  .kpi .val{font-family:var(--f-disp);font-size:25px;line-height:1.05}
+  .kpi .sub{font-size:12px;color:var(--faint)} .kpi .sub strong{font-weight:600}
+  .up{color:var(--good)} .down{color:var(--bad)}
+  .grid{display:grid;grid-template-columns:3fr 2fr;gap:16px}
+  .grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+  .card{background:var(--surface);border:1px solid var(--line);border-radius:13px;padding:16px 17px;min-width:0}
+  .card h3{font-size:15px;margin-bottom:2px} .card .cap{font-size:12px;color:var(--muted);margin-bottom:13px}
+  .legend{display:flex;flex-wrap:wrap;gap:8px 13px;margin-bottom:11px}
+  .lg{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--muted)}
+  .sw{width:10px;height:10px;border-radius:3px;flex:none}
+  .chrow{display:flex;align-items:center;gap:10px;padding:7px 0;border-top:1px solid var(--line)}
+  .chrow:first-of-type{border-top:0}
+  .chname{display:flex;align-items:center;gap:7px;width:120px;flex:none;font-size:13px}
+  .chbarwrap{flex:1;min-width:0;height:9px;background:var(--surface-2);border-radius:5px;overflow:hidden}
+  .chbar{height:100%;border-radius:5px}
+  .chval{width:116px;flex:none;text-align:right;font-size:12.5px}
+  .chval b{font-weight:600}.chval span{color:var(--faint);margin-left:5px}
+  svg{display:block;width:100%;height:auto;overflow:visible}
+  .axis{fill:var(--faint);font-size:10.5px} .gl{stroke:var(--line);stroke-width:1}
+  .seg{transition:opacity .12s}.seg:hover{opacity:.82}
+  rect.seg,path.seg{stroke:var(--surface);stroke-width:1.4}
+  .donut-wrap{display:flex;align-items:center;gap:18px;flex-wrap:wrap}
+  .donut-legend{display:flex;flex-direction:column;gap:9px;font-size:13px}
+  .dl{display:flex;align-items:center;gap:8px} .dl b{font-weight:600}.dl span{color:var(--faint);font-size:12px}
+  .mini{display:flex;flex-direction:column;gap:4px}
+  .mini .lab{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.04em}
+  .mini .v{font-family:var(--f-disp);font-size:20px}
+  .splitbar{height:12px;border-radius:6px;overflow:hidden;display:flex;margin-top:4px}
+  .ptable{width:100%;border-collapse:collapse;font-size:13px}
+  .ptable td{padding:8px 4px;border-top:1px solid var(--line)} .ptable tr:first-child td{border-top:0}
+  .ptable td:last-child{text-align:right;font-weight:600} .ptable .rank{color:var(--faint);width:20px}
+  .pill{display:inline-flex;align-items:center;gap:5px;font-size:11px;font-weight:600;padding:3px 8px;border-radius:20px}
+  .pill.g{background:color-mix(in srgb,var(--good) 15%,transparent);color:var(--good)}
+  .note{font-size:11.5px;color:var(--faint);display:flex;gap:7px;align-items:flex-start;padding:2px}
+  .tt{position:fixed;pointer-events:none;background:var(--ink);color:var(--bg);font-size:12px;padding:7px 9px;border-radius:7px;opacity:0;transition:opacity .1s;z-index:30;white-space:nowrap}
+  @media (max-width:820px){.grid,.grid3{grid-template-columns:1fr}.kpis{grid-template-columns:repeat(2,1fr)}}
+</style>
+</head>
+<body>
+<div id="root"></div>
+<div class="tt"></div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.3.1/umd/react.production.min.js" crossorigin></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.3.1/umd/react-dom.production.min.js" crossorigin></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.26.4/babel.min.js" crossorigin></script>
+
+<script type="text/babel" data-presets="react">
+const {useState} = React;
+const eur = n => Math.round(n).toLocaleString("es-ES")+" €";
+
+// ── DATOS FICTICIOS (sustituir por Supabase, ver §5) ──
+const WCH = [["SEO","--c-seo"],["Org","--c-org"],["Goo","--c-google"],["Met","--c-meta"],["Ema","--c-email"],["Dir","--c-directo"]];
+const WLAB = {SEO:"SEO",Org:"Orgánico",Goo:"Google Ads",Met:"Meta Ads",Ema:"Email",Dir:"Directo"};
+const MONTHS=["may","jun","jul","ago","sep","oct"];
+const WEB = {
+  may:{SEO:4800,Org:2100,Goo:9200,Met:6400,Ema:10800,Dir:2900},
+  jun:{SEO:5200,Org:2300,Goo:9800,Met:7100,Ema:11900,Dir:3100},
+  jul:{SEO:5600,Org:2500,Goo:10400,Met:7600,Ema:12700,Dir:3300},
+  ago:{SEO:5900,Org:2650,Goo:10900,Met:8100,Ema:13400,Dir:3450},
+  sep:{SEO:6050,Org:2750,Goo:11200,Met:8600,Ema:13900,Dir:3550},
+  oct:{SEO:6200,Org:2800,Goo:11500,Met:8900,Ema:14300,Dir:3600},
+};
+const AMZ_M={may:18200,jun:19500,jul:20800,ago:21900,sep:22700,oct:23800};
+const sum=o=>Object.values(o).reduce((a,b)=>a+b,0);
+const webOct=WEB.oct, webOctTotal=sum(webOct), amzOct=AMZ_M.oct, globalOct=webOctTotal+amzOct;
+
+function seeded(i){ const x=Math.sin(i*12.9898)*43758.5453; return x-Math.floor(x); }
+const DAYS=Array.from({length:28},(_,i)=>String(i+1).padStart(2,"0"));
+function dailyFor(base){ const o={}; DAYS.forEach((dd,i)=>{ const dow=(i+2)%7,wk=(dow===5||dow===6)?0.72:1.05;
+  o[dd]={}; WCH.forEach(([k],j)=>{ o[dd][k]=Math.max(0,Math.round(base[k]*wk*(0.6+0.8*seeded(i*7+j)))); }); }); return o; }
+const webBaseDay={SEO:200,Org:90,Goo:371,Met:287,Ema:461,Dir:116};
+const WEB_DAILY=dailyFor(webBaseDay);
+const AMZ={ventas:23800,pedidos:412,unidades:985,ticket:57.8,adsInv:3950,acos:16.6,tacos:9.2,roas:6.0,fba:78,fbm:22,buybox:94,devol:4.1,
+  top:[["AOVE Picual 500 ml",5820],["Estuche Imagine Gourmet",4110],["Red Diamond Royal 750 ml",3290],["Pack Degustación x3",2460],["Cosecha Temprana 2 L",1980]]};
+
+let ttEl; function showTT(e,h){if(!ttEl)ttEl=document.querySelector(".tt");ttEl.innerHTML=h;ttEl.style.opacity=1;
+  ttEl.style.left=Math.min(e.clientX+12,innerWidth-ttEl.offsetWidth-8)+"px";ttEl.style.top=(e.clientY-ttEl.offsetHeight-10)+"px";}
+function hideTT(){if(ttEl)ttEl.style.opacity=0;}
+
+function Kpi({lab,val,sub,amz}){return <div className={"kpi"+(amz?" amz":"")}>
+  <div className="lab">{lab}</div><div className="val num">{val}</div>
+  {sub&&<div className="sub" dangerouslySetInnerHTML={{__html:sub}}/>}</div>;}
+function Legend({items}){return <div className="legend">{items.map(([k,v,lab])=>
+  <span className="lg" key={k}><span className="sw" style={{background:`var(${v})`}}></span>{lab}</span>)}</div>;}
+
+function ChannelBars({data,cfg,lab}){
+  const total=sum(data), rows=cfg.map(([k,v])=>({k,v,lab:lab[k],val:data[k]})).sort((a,b)=>b.val-a.val), max=Math.max(...rows.map(r=>r.val));
+  return <div>{rows.map(r=><div className="chrow" key={r.k}>
+    <div className="chname"><span className="sw" style={{background:`var(${r.v})`}}></span>{r.lab}</div>
+    <div className="chbarwrap"><div className="chbar" style={{width:(r.val/max*100)+"%",background:`var(${r.v})`}}></div></div>
+    <div className="chval num"><b>{eur(r.val)}</b><span>{(r.val/total*100).toFixed(0)}%</span></div></div>)}</div>;
+}
+function MonthlyStack({data,cfg,lab}){
+  const W=560,H=240,padL=42,padB=26,padT=10,padR=8;
+  const totals=MONTHS.map(m=>sum(data[m])), yMax=Math.ceil(Math.max(...totals)/10000)*10000;
+  const bw=(W-padL-padR)/MONTHS.length, y=v=>padT+(H-padT-padB)*(1-v/yMax);
+  return <svg viewBox={`0 0 ${W} ${H}`} role="img" aria-label="Ventas mensuales por canal">
+    {[0,yMax/2,yMax].map((t,i)=><g key={i}><line className="gl" x1={padL} x2={W-padR} y1={y(t)} y2={y(t)}/>
+      <text className="axis" x={padL-6} y={y(t)+3} textAnchor="end">{t/1000}k</text></g>)}
+    {MONTHS.map((m,i)=>{let acc=0;const x=padL+bw*i+bw*0.16,w=bw*0.68;
+      return <g key={m}>{cfg.map(([k,v])=>{const val=data[m][k];if(val<=0)return null;
+        const h=(H-padT-padB)*val/yMax,yy=y(acc+val);acc+=val;
+        return <rect className="seg" key={k} x={x} y={yy} width={w} height={h} rx="2" fill={`var(${v})`}
+          onMouseMove={e=>showTT(e,`${lab[k]} · <span class="num">${eur(val)}</span>`)} onMouseLeave={hideTT}/>;})}
+        <text className="axis" x={x+w/2} y={H-padB+14} textAnchor="middle">{m}</text></g>;})}
+  </svg>;
+}
+function DailyStack(){
+  const W=560,H=210,padL=34,padB=22,padT=10,padR=6;
+  const totals=DAYS.map(d=>sum(WEB_DAILY[d])), yMax=Math.ceil(Math.max(...totals)/500)*500;
+  const bw=(W-padL-padR)/DAYS.length, y=v=>padT+(H-padT-padB)*(1-v/yMax);
+  return <svg viewBox={`0 0 ${W} ${H}`} role="img" aria-label="Ventas diarias por canal">
+    {[0,yMax/2,yMax].map((t,i)=><g key={i}><line className="gl" x1={padL} x2={W-padR} y1={y(t)} y2={y(t)}/>
+      <text className="axis" x={padL-5} y={y(t)+3} textAnchor="end">{t/1000}k</text></g>)}
+    {DAYS.map((dd,i)=>{let acc=0;const x=padL+bw*i+bw*0.14,w=bw*0.72,tot=totals[i];
+      return <g key={dd} onMouseMove={e=>showTT(e,`${dd} oct · <span class="num">${eur(tot)}</span>`)} onMouseLeave={hideTT}>
+        {WCH.map(([k,v])=>{const val=WEB_DAILY[dd][k];if(val<=0)return null;const h=(H-padT-padB)*val/yMax,yy=y(acc+val);acc+=val;
+          return <rect className="seg" key={k} x={x} y={yy} width={w} height={Math.max(h,.6)} fill={`var(${v})`}/>;})}
+        {(+dd)%5===0&&<text className="axis" x={x+w/2} y={H-padB+13} textAnchor="middle">{dd}</text>}</g>;})}
+  </svg>;
+}
+function RoasLine(){
+  const W=560,H=200,padL=34,padB=24,padT=14,padR=10,yMax=4;
+  const y=v=>padT+(H-padT-padB)*(1-v/yMax), x=i=>padL+(W-padL-padR)*(i/(MONTHS.length-1));
+  const spend={Goo:{may:3700,jun:3950,jul:4100,ago:4250,sep:4350,oct:3600},Met:{may:2900,jun:3050,jul:3150,ago:3200,sep:3250,oct:3100}};
+  const series=[["Goo","--c-google"],["Met","--c-meta"]];
+  return <svg viewBox={`0 0 ${W} ${H}`} role="img" aria-label="ROAS por mes">
+    {[0,1,2,3,4].map(t=><g key={t}><line className="gl" x1={padL} x2={W-padR} y1={y(t)} y2={y(t)}/>
+      <text className="axis" x={padL-6} y={y(t)+3} textAnchor="end">{t}x</text></g>)}
+    {series.map(([k,v])=>{const pts=MONTHS.map((m,i)=>({i,r:WEB[m][k]/spend[k][m]}));
+      const d=pts.map((p,i)=>`${i?"L":"M"}${x(i)} ${y(p.r)}`).join(" ");
+      return <g key={k}><path d={d} fill="none" stroke={`var(${v})`} strokeWidth="2.4" strokeLinejoin="round" strokeLinecap="round"/>
+        {pts.map((p,i)=><circle key={i} cx={x(i)} cy={y(p.r)} r="4" fill={`var(${v})`} stroke="var(--surface)" strokeWidth="1.5"
+          onMouseMove={e=>showTT(e,`${WLAB[k]} · ${MONTHS[i]} · ROAS <span class="num">${p.r.toFixed(2)}x</span>`)} onMouseLeave={hideTT}/>)}</g>;})}
+    {MONTHS.map((m,i)=><text key={m} className="axis" x={x(i)} y={H-padB+14} textAnchor="middle">{m}</text>)}
+  </svg>;
+}
+function Donut(){
+  const segs=[["Web (Shopify)",webOctTotal,"var(--accent)"],["Amazon",amzOct,"var(--amz)"]];
+  const tot=segs.reduce((a,s)=>a+s[1],0), R=52,C=2*Math.PI*R; let off=0;
+  return <div className="donut-wrap">
+    <svg viewBox="0 0 130 130" width="130" height="130" style={{flex:"none"}}>
+      <circle cx="65" cy="65" r={R} fill="none" stroke="var(--surface-2)" strokeWidth="18"/>
+      {segs.map((s,i)=>{const len=C*(s[1]/tot),el=<circle key={i} cx="65" cy="65" r={R} fill="none" stroke={s[2]} strokeWidth="18" strokeDasharray={`${len} ${C-len}`} strokeDashoffset={-off} transform="rotate(-90 65 65)"/>;off+=len;return el;})}
+      <text x="65" y="61" textAnchor="middle" className="num" fontFamily="var(--f-disp)" fontSize="19" fill="var(--ink)">{eur(tot)}</text>
+      <text x="65" y="78" textAnchor="middle" fontSize="10" fill="var(--faint)">octubre</text>
+    </svg>
+    <div className="donut-legend">{segs.map((s,i)=><div className="dl" key={i}>
+      <span className="sw" style={{width:12,height:12,borderRadius:3,background:s[2]}}></span>
+      <div><b>{s[0]}</b> · <span className="num">{eur(s[1])}</span> <span>({(s[1]/tot*100).toFixed(0)}%)</span></div></div>)}</div>
+  </div>;
+}
+function AmzMonthly(){
+  const W=560,H=220,padL=42,padB=26,padT=10,padR=8;
+  const yMax=Math.ceil(Math.max(...MONTHS.map(m=>AMZ_M[m]))/5000)*5000, bw=(W-padL-padR)/MONTHS.length, y=v=>padT+(H-padT-padB)*(1-v/yMax);
+  return <svg viewBox={`0 0 ${W} ${H}`} role="img" aria-label="Ventas Amazon por mes">
+    {[0,yMax/2,yMax].map((t,i)=><g key={i}><line className="gl" x1={padL} x2={W-padR} y1={y(t)} y2={y(t)}/>
+      <text className="axis" x={padL-6} y={y(t)+3} textAnchor="end">{t/1000}k</text></g>)}
+    {MONTHS.map((m,i)=>{const val=AMZ_M[m],x=padL+bw*i+bw*0.2,w=bw*0.6,h=(H-padT-padB)*val/yMax;
+      return <g key={m}><rect className="seg" x={x} y={y(val)} width={w} height={h} rx="3" fill="var(--amz)"
+        onMouseMove={e=>showTT(e,`${m} · <span class="num">${eur(val)}</span>`)} onMouseLeave={hideTT}/>
+        <text className="axis" x={x+w/2} y={H-padB+14} textAnchor="middle">{m}</text></g>;})}
+  </svg>;
+}
+
+// ── Intradía ──
+const NOW_H=13; // sustituir por hora real (extract hour)
+const HCURVE=[2,1,1,1,2,4,10,22,38,52,60,66,70,64,50,46,44,52,70,78,74,58,34,14];
+const HSUM=HCURVE.reduce((a,b)=>a+b,0);
+function hourly(base){const o={};for(let h=0;h<24;h++){o[h]={};WCH.forEach(([k],j)=>{o[h][k]=Math.max(0,Math.round(base[k]*(HCURVE[h]/HSUM)*(0.75+0.5*seeded(h*5+j))));});}return o;}
+const WEB_H=hourly(webBaseDay);
+const AMZ_H={};for(let h=0;h<24;h++){AMZ_H[h]=Math.round(767*(HCURVE[h]/HSUM)*(0.7+0.6*seeded(h*3+2)));}
+const sumHW=h=>Object.values(WEB_H[h]).reduce((a,b)=>a+b,0);
+let hoyWeb=0,hoyAmz=0;for(let h=0;h<=NOW_H;h++){hoyWeb+=sumHW(h);hoyAmz+=AMZ_H[h];}
+const hoyTot=hoyWeb+hoyAmz, pedHoy=Math.round(hoyWeb/92)+Math.round(hoyAmz/57.8);
+let bestH=0,bestV=0;for(let h=0;h<=NOW_H;h++){const v=sumHW(h)+AMZ_H[h];if(v>bestV){bestV=v;bestH=h;}}
+const proyCierre=Math.round(hoyTot/(HCURVE.slice(0,NOW_H+1).reduce((a,b)=>a+b,0)/HSUM));
+const WEB_TODAY={};WCH.forEach(([k])=>{let s=0;for(let h=0;h<=NOW_H;h++)s+=WEB_H[h][k];WEB_TODAY[k]=s;});
+
+function HourlyStack({amz}){
+  const W=560,H=220,padL=36,padB=22,padT=10,padR=6;
+  const totals=[];for(let h=0;h<24;h++)totals.push(h<=NOW_H?(amz?AMZ_H[h]:sumHW(h)):0);
+  const yMax=Math.ceil(Math.max(...totals,10)/(amz?40:50))*(amz?40:50);
+  const bw=(W-padL-padR)/24, y=v=>padT+(H-padT-padB)*(1-v/yMax), xC=h=>padL+bw*h+bw*0.15, w=bw*0.7, nowX=padL+bw*(NOW_H+1);
+  return <svg viewBox={`0 0 ${W} ${H}`} role="img" aria-label="Ventas por hora">
+    {[0,yMax/2,yMax].map((t,i)=><g key={i}><line className="gl" x1={padL} x2={W-padR} y1={y(t)} y2={y(t)}/>
+      <text className="axis" x={padL-5} y={y(t)+3} textAnchor="end">{t}</text></g>)}
+    {Array.from({length:24},(_,h)=>{
+      if(h>NOW_H) return <text key={h} className="axis" x={xC(h)+w/2} y={H-padB+13} textAnchor="middle" opacity={h%3===0?.5:0}>{h%3===0?h:""}</text>;
+      if(amz){const v=AMZ_H[h];return <g key={h} onMouseMove={e=>showTT(e,`${h}:00 · Amazon <span class="num">${eur(v)}</span>`)} onMouseLeave={hideTT}>
+        <rect className="seg" x={xC(h)} y={y(v)} width={w} height={(H-padT-padB)*v/yMax} rx="2" fill="var(--amz)"/>
+        {h%3===0&&<text className="axis" x={xC(h)+w/2} y={H-padB+13} textAnchor="middle">{h}</text>}</g>;}
+      let acc=0;const tot=sumHW(h);
+      return <g key={h} onMouseMove={e=>showTT(e,`${h}:00 · <span class="num">${eur(tot)}</span>`)} onMouseLeave={hideTT}>
+        {WCH.map(([k,v])=>{const val=WEB_H[h][k];if(val<=0)return null;const hh=(H-padT-padB)*val/yMax,yy=y(acc+val);acc+=val;
+          return <rect className="seg" key={k} x={xC(h)} y={yy} width={w} height={Math.max(hh,.6)} fill={`var(${v})`}/>;})}
+        {h%3===0&&<text className="axis" x={xC(h)+w/2} y={H-padB+13} textAnchor="middle">{h}</text>}</g>;
+    })}
+    <line x1={nowX} x2={nowX} y1={padT} y2={H-padB} stroke="var(--accent)" strokeWidth="1.3" strokeDasharray="3 3"/>
+    <text x={nowX+3} y={padT+9} fontSize="9.5" fill="var(--accent)" fontWeight="600">ahora</text>
+  </svg>;
+}
+
+function Banner(){return <div className="banner"><span>🧪</span>
+  <span><b>Datos de muestra</b> — demostración con cifras ficticias. (Quitar con datos reales.)</span></div>;}
+
+function Global(){ return <main><Banner/>
+  <section className="kpis">
+    <Kpi lab="Facturación total" val={eur(globalOct)} sub="octubre · web + Amazon"/>
+    <Kpi lab="Pedidos" val={(361+AMZ.pedidos).toLocaleString("es-ES")} sub="773 pedidos"/>
+    <Kpi lab="Web (Shopify)" val={eur(webOctTotal)} sub={`<strong class='up'>▲ 2,9%</strong> vs sept`}/>
+    <Kpi lab="Amazon" val={eur(amzOct)} amz sub={`<strong class='up'>▲ 4,8%</strong> vs sept`}/>
+  </section>
+  <section className="grid">
+    <div className="card"><h3>Facturación mensual por canal web</h3><div className="cap">Shopify · 6 meses</div>
+      <Legend items={WCH.map(([k,v])=>[k,v,WLAB[k]])}/><MonthlyStack data={WEB} cfg={WCH} lab={WLAB}/></div>
+    <div className="card"><h3>Reparto Web vs Amazon</h3><div className="cap">Peso de cada plataforma en octubre</div><Donut/>
+      <div className="note" style={{marginTop:14}}><span>ℹ︎</span><span>El fulfillment MCF (Amazon logística de pedidos web) cuenta en Web, no en Amazon.</span></div></div>
+  </section></main>; }
+
+function Web(){ const roasG=WEB.oct.Goo/3600, roasM=WEB.oct.Met/3100; return <main><Banner/>
+  <section className="kpis">
+    <Kpi lab="Facturado web" val={eur(webOctTotal)} sub="octubre · 6 canales"/>
+    <Kpi lab="Inversión Ads" val={eur(3600+3100)} sub="Google + Meta"/>
+    <Kpi lab="ROAS Google" val={roasG.toFixed(2)+"x"} sub={`<strong class='up'>▲</strong> 1st-party`}/>
+    <Kpi lab="ROAS Meta" val={roasM.toFixed(2)+"x"} sub={`<strong class='up'>▲</strong> 1st-party`}/>
+  </section>
+  <section className="grid">
+    <div className="card"><h3>Ventas por canal · histórico</h3><div className="cap">Atribución propia · 6 meses</div>
+      <Legend items={WCH.map(([k,v])=>[k,v,WLAB[k]])}/><MonthlyStack data={WEB} cfg={WCH} lab={WLAB}/></div>
+    <div className="card"><h3>Mezcla de canales · octubre</h3><div className="cap">Reparto del facturado web</div>
+      <ChannelBars data={webOct} cfg={WCH} lab={WLAB}/></div>
+  </section>
+  <section className="grid">
+    <div className="card"><h3>Ventas diarias por canal · octubre</h3><div className="cap">Cada barra es un día, apilada por canal</div>
+      <Legend items={WCH.map(([k,v])=>[k,v,WLAB[k]])}/><DailyStack/></div>
+    <div className="card"><h3>ROAS Ads · 1st-party</h3><div className="cap">Ingresos atribuidos ÷ inversión</div>
+      <Legend items={[["Goo","--c-google","Google Ads"],["Met","--c-meta","Meta Ads"]]}/><RoasLine/></div>
+  </section></main>; }
+
+function Amazon(){ return <main><Banner/>
+  <section className="kpis">
+    <Kpi lab="Ventas Amazon ES" val={eur(AMZ.ventas)} amz sub={`<strong class='up'>▲ 4,8%</strong> vs sept`}/>
+    <Kpi lab="Pedidos" val={AMZ.pedidos} amz sub={`${AMZ.unidades} uds · ticket ${AMZ.ticket.toFixed(0)} €`}/>
+    <Kpi lab="Inversión Amazon Ads" val={eur(AMZ.adsInv)} amz sub={`ACOS ${AMZ.acos}% · TACOS ${AMZ.tacos}%`}/>
+    <Kpi lab="ROAS Amazon Ads" val={AMZ.roas.toFixed(1)+"x"} amz sub="sobre ventas publicitadas"/>
+  </section>
+  <section className="grid3">
+    <div className="card"><h3>Logística</h3><div className="cap">Reparto FBA / FBM</div>
+      <div className="splitbar"><div style={{width:AMZ.fba+"%",background:"var(--amz)"}}></div><div style={{width:AMZ.fbm+"%",background:"var(--c-directo)"}}></div></div>
+      <div className="legend" style={{marginTop:9}}>
+        <span className="lg"><span className="sw" style={{background:"var(--amz)"}}></span>FBA {AMZ.fba}%</span>
+        <span className="lg"><span className="sw" style={{background:"var(--c-directo)"}}></span>FBM {AMZ.fbm}%</span></div></div>
+    <div className="card"><h3>Buy Box</h3><div className="cap">% de tiempo ganando la Buy Box</div>
+      <div className="mini"><div className="v num">{AMZ.buybox}%</div><span className="pill g">▲ saludable</span></div></div>
+    <div className="card"><h3>Devoluciones</h3><div className="cap">Tasa sobre pedidos</div>
+      <div className="mini"><div className="v num">{AMZ.devol}%</div><span style={{fontSize:12,color:"var(--muted)"}}>normal en alimentación</span></div></div>
+  </section>
+  <section className="grid">
+    <div className="card"><h3>Ventas Amazon · histórico mensual</h3><div className="cap">Marketplace ES · 6 meses</div><AmzMonthly/></div>
+    <div className="card"><h3>Top productos · octubre</h3><div className="cap">Por facturación en Amazon</div>
+      <table className="ptable"><tbody>{AMZ.top.map((p,i)=><tr key={i}>
+        <td className="rank num">{i+1}</td><td>{p[0]}</td><td className="num">{eur(p[1])}</td></tr>)}</tbody></table></div>
+  </section></main>; }
+
+function Intradia(){ return <main><Banner/>
+  <section className="kpis">
+    <Kpi lab="Facturado hoy" val={eur(hoyTot)} sub="corte 13:00 · web + Amazon"/>
+    <Kpi lab="Pedidos hoy" val={pedHoy} sub={`ticket medio ${Math.round(hoyTot/pedHoy)} €`}/>
+    <Kpi lab="Hora pico" val={bestH+":00"} sub={`<strong class='up'>${eur(bestV)}</strong> en esa franja`}/>
+    <Kpi lab="Proyección cierre" val={eur(proyCierre)} sub={`<strong class='up'>▲ 12%</strong> vs ayer a esta hora`}/>
+  </section>
+  <section className="grid">
+    <div className="card"><h3>Ventas por hora · hoy (web)</h3><div className="cap">Cada barra es una hora, apilada por canal · línea = ahora</div>
+      <Legend items={WCH.map(([k,v])=>[k,v,WLAB[k]])}/><HourlyStack/></div>
+    <div className="card"><h3>Mezcla de canales · hoy</h3><div className="cap">Reparto acumulado del día</div>
+      <ChannelBars data={WEB_TODAY} cfg={WCH} lab={WLAB}/></div>
+  </section>
+  <section className="grid">
+    <div className="card"><h3>Amazon por hora · hoy</h3><div className="cap">Ventas del marketplace, hora a hora</div><HourlyStack amz/></div>
+    <div className="card"><h3>Ritmo del día</h3><div className="cap">Dónde está hoy frente al cierre previsto</div>
+      <div className="mini" style={{gap:10}}>
+        <div><div className="lab">Llevamos</div><div className="v num">{eur(hoyTot)}</div></div>
+        <div className="splitbar" style={{height:14}}><div style={{width:(hoyTot/proyCierre*100)+"%",background:"var(--accent)"}}></div></div>
+        <div style={{fontSize:12.5,color:"var(--muted)"}}>{(hoyTot/proyCierre*100).toFixed(0)}% de la proyección de cierre ({eur(proyCierre)}). Las franjas fuertes de tarde (18–21 h) aún no han entrado.</div>
+      </div></div>
+  </section></main>; }
+
+function App(){
+  const [tab,setTab]=useState("global");
+  const views={global:<Global/>,intradia:<Intradia/>,web:<Web/>,amazon:<Amazon/>};
+  return <React.Fragment>
+    <header className="top"><div className="wrap head-in">
+      <div className="brand"><div className="logo">V</div>
+        <div><div className="t1">Verde Esmeralda</div><div className="t2">Panel de ventas · multicanal</div></div></div>
+      <span className="demo">Demo · datos de muestra</span>
+      <div className="tabs" role="tablist">
+        {[["global","Global"],["intradia","Intradía"],["web","Web"],["amazon","Amazon"]].map(([k,l])=>
+          <button key={k} className="tab" role="tab" aria-selected={tab===k} onClick={()=>setTab(k)}>{l}</button>)}
+      </div>
+    </div></header>
+    <div className="wrap">{views[tab]}</div>
+  </React.Fragment>;
+}
+ReactDOM.createRoot(document.getElementById("root")).render(<App/>);
+</script>
+</body>
+</html>
