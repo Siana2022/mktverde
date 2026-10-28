@@ -1,0 +1,9 @@
+node_modules/
+src/
+build.mjs
+package.json
+package-lock.json
+.mcpbignore
+dist/
+*.map
+test.mjs

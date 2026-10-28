@@ -1,0 +1,18 @@
+{
+  "name": "verde-esmeralda-ventas-mcp",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Servidor MCP de ventas de Verde Esmeralda (empaquetado como .mcpb).",
+  "type": "module",
+  "scripts": {
+    "build": "node build.mjs",
+    "pack": "npm run build && mcpb pack . dist/verde-esmeralda-ventas.mcpb"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "1.32.2"
+  },
+  "devDependencies": {
+    "@anthropic-ai/mcpb": "2.1.2",
+    "esbuild": "0.28.2"
+  }
+}

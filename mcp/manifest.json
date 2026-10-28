@@ -1,0 +1,86 @@
+{
+  "manifest_version": "0.3",
+  "name": "verde-esmeralda-ventas",
+  "display_name": "Ventas Verde Esmeralda",
+  "version": "1.0.0",
+  "description": "Consulta las ventas multicanal de Verde Esmeralda (web Shopify + Google Ads, con atribución propia por canal) desde Claude, para analizar y tomar decisiones.",
+  "long_description": "Expone como herramientas MCP los datos de ventas de Verde Esmeralda: ventas web por canal (SEO, Orgánico, Google Ads, Meta Ads, Email, Directo) con atribución propia a partir de los UTMs capturados en cada pedido, histórico mensual, ventas diarias, intradía y la inversión/ROAS de Google Ads. Sin credenciales funciona con una instantánea de datos reales; al configurar Shopify (y opcionalmente Google Ads) pasa a datos en vivo.",
+  "author": { "name": "Siana Digital", "url": "https://sianadigital.com" },
+  "server": {
+    "type": "node",
+    "entry_point": "server/index.mjs",
+    "mcp_config": {
+      "command": "node",
+      "args": ["${__dirname}/server/index.mjs"],
+      "env": {
+        "SHOPIFY_STORE_DOMAIN": "${user_config.shopify_domain}",
+        "SHOPIFY_ADMIN_TOKEN": "${user_config.shopify_token}",
+        "SHOPIFY_API_VERSION": "2024-10",
+        "GOOGLE_ADS_DEVELOPER_TOKEN": "${user_config.google_dev_token}",
+        "GOOGLE_ADS_CLIENT_ID": "${user_config.google_client_id}",
+        "GOOGLE_ADS_CLIENT_SECRET": "${user_config.google_client_secret}",
+        "GOOGLE_ADS_REFRESH_TOKEN": "${user_config.google_refresh_token}",
+        "GOOGLE_ADS_LOGIN_CUSTOMER_ID": "2333383997",
+        "GOOGLE_ADS_CUSTOMER_ID": "7701012791",
+        "PANEL_TIMEZONE": "Europe/Madrid"
+      }
+    }
+  },
+  "user_config": {
+    "shopify_domain": {
+      "type": "string",
+      "title": "Dominio Shopify (.myshopify.com)",
+      "description": "Dominio interno de la tienda, por ejemplo q2ugmg-bz.myshopify.com",
+      "required": false,
+      "default": "q2ugmg-bz.myshopify.com"
+    },
+    "shopify_token": {
+      "type": "string",
+      "title": "Shopify Admin API token",
+      "description": "Token shpat_... de una app privada con permisos de lectura. Si lo dejas vacío, se usan datos de muestra reales.",
+      "sensitive": true,
+      "required": false,
+      "default": ""
+    },
+    "google_dev_token": {
+      "type": "string",
+      "title": "Google Ads · developer token",
+      "description": "Opcional. Añade inversión y ROAS de Google Ads.",
+      "sensitive": true,
+      "required": false,
+      "default": ""
+    },
+    "google_client_id": {
+      "type": "string",
+      "title": "Google Ads · OAuth client id",
+      "description": "Opcional.",
+      "required": false,
+      "default": ""
+    },
+    "google_client_secret": {
+      "type": "string",
+      "title": "Google Ads · OAuth client secret",
+      "description": "Opcional.",
+      "sensitive": true,
+      "required": false,
+      "default": ""
+    },
+    "google_refresh_token": {
+      "type": "string",
+      "title": "Google Ads · refresh token",
+      "description": "Opcional.",
+      "sensitive": true,
+      "required": false,
+      "default": ""
+    }
+  },
+  "tools": [
+    { "name": "resumen_ventas", "description": "Resumen de decisión: mes actual por canal, Google Ads (inversión/ROAS), hoy y top productos." },
+    { "name": "ventas_mensuales", "description": "Histórico de 6 meses por canal y con Google Ads por mes." },
+    { "name": "ventas_diarias", "description": "Ventas del mes en curso día a día, por canal." },
+    { "name": "intradia_hoy", "description": "Ventas de hoy hora a hora, por canal." },
+    { "name": "top_productos", "description": "Productos más vendidos del mes." }
+  ],
+  "keywords": ["ventas", "shopify", "google ads", "atribución", "ecommerce"],
+  "license": "UNLICENSED"
+}

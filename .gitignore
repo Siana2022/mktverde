@@ -29,3 +29,7 @@ next-env.d.ts
 
 # scratch
 /tmp
+
+# mcp build outputs (the .mcpb in mcp/dist is committed on purpose)
+/mcp/node_modules
+/mcp/server
