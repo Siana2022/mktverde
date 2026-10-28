@@ -1,89 +1,84 @@
 # Panel de ventas Verde Esmeralda
 
-Panel multicanal de ventas de **Verde Esmeralda**: web (Shopify) + Amazon, con
-histórico mensual, intradía y ROAS. Stack objetivo: **Next.js + React + Supabase +
-Vercel**.
+Panel multicanal de ventas de **Verde Esmeralda Olive** (verdesmeraldaolive.com):
+web (Shopify) + Google Ads, con histórico mensual, ventas diarias, intradía y ROAS.
 
-Este repositorio contiene, de momento, el **prototipo autocontenido** (`index.html`):
-React vía CDN + SVG dibujado a mano, con **datos ficticios**. Es la referencia visual
-y funcional para portar luego a Next.js.
+Aplicación **Next.js (App Router) + TypeScript**, lista para desplegar en **Vercel**.
+Lee datos **en vivo** de Shopify y Google Ads cuando hay credenciales; si no, muestra
+un **snapshot de datos reales** (ver más abajo). **Nunca** hay que subir un CSV.
 
-## Ver el prototipo
+## Cómo funciona (vivo vs instantánea)
 
-Es un único archivo estático. Para verlo:
+- **Con credenciales** (en `.env.local` o en Vercel) → la app consulta Shopify (Admin
+  GraphQL) y Google Ads (API REST) en servidor, con revalidación cada 5 min (ISR).
+- **Sin credenciales** → usa `data/snapshot.json`, una instantánea de **datos reales**
+  capturados de Shopify + Google Ads (fechada en el banner). Así la web se ve y se
+  despliega aunque aún no hayas configurado los secretos.
+
+La cabecera indica el modo: **«En vivo»** (verde) o **«Instantánea real»** (ámbar).
+
+## Las 4 vistas
+
+1. **Global** — facturación web del mes, pedidos, ticket medio, inversión y ROAS de
+   Google; histórico mensual de ventas web (6 meses) y reparto Web vs Amazon.
+2. **Intradía** — ventas de hoy por hora (tiempo real de Shopify) con marcador «ahora»,
+   facturado y pedidos acumulados, hora pico.
+3. **Web** — facturado web, inversión/ROAS/valor atribuido de Google; ventas web vs
+   atribuido a Google (6 meses), atribución del mes, ventas diarias y ROAS por mes.
+4. **Amazon** — *fase 2*. Pantalla de «pendiente de conectar» con lo que aparecerá al
+   enchufar Amazon SP-API + Amazon Ads API.
+
+## Puesta en marcha (local)
 
 ```bash
-python3 -m http.server 8000
+npm install
+cp .env.example .env.local   # opcional: rellena credenciales para datos en vivo
+npm run dev
 ```
 
-Luego abre <http://localhost:8000/index.html>. (También funciona abriendo el archivo
-directamente en el navegador, pero un servidor evita problemas de CORS con las fuentes.)
+Abre <http://localhost:3000>. Sin `.env.local`, verás el snapshot de datos reales.
 
-## Las 4 vistas (pestañas)
+## Despliegue en Vercel
 
-1. **Global** — KPIs (facturación total web+Amazon, pedidos, web, Amazon), histórico
-   mensual por canal web (barras apiladas), donut **Web vs Amazon**.
-2. **Intradía** — KPIs del día (facturado hoy, pedidos, hora pico, proyección de
-   cierre), ventas por hora apiladas por canal con marcador «ahora», mezcla de canales
-   del día, Amazon por hora, barra de ritmo vs proyección.
-3. **Web** — los 6 canales (SEO, Orgánico, Google Ads, Meta Ads, Email, Directo):
-   KPIs + ROAS, mezcla del mes, histórico, ventas diarias apiladas, ROAS Google+Meta.
-4. **Amazon** — ventas, pedidos, ticket, Amazon Ads (ACOS/TACOS/ROAS), FBA/FBM, Buy
-   Box, devoluciones, histórico mensual, top productos.
+1. Importa el repo en Vercel (framework detectado: Next.js, sin configuración extra).
+2. En **Settings → Environment Variables**, añade las variables de `.env.example`
+   (ver abajo). Sin ellas, el deploy funciona igual mostrando el snapshot.
+3. Deploy. Con las variables puestas, la app pasa sola a datos en vivo.
 
-## Diseño
+### Variables de entorno
 
-- **Fuentes** (Google Fonts): `Fraunces` (titulares) + `IBM Plex Sans` (datos).
-- **Paleta de canales** (validada CVD; 5 vivos + Directo neutro):
-  SEO `#1baf7a` · Orgánico `#eda100` · Google `#2a78d6` · Meta `#e87ba4` · Email
-  `#eb6834` · Directo `#8a8f98`. Plataforma Amazon `#e4891b`.
-- Reglas: nunca doble eje, leyenda siempre, `tabular-nums`, tema claro/oscuro por
-  tokens, responsive (las rejillas colapsan a 1 columna < 820px).
-- Componentes de chart reutilizables: `MonthlyStack`, `ChannelBars`, `DailyStack`,
-  `RoasLine`, `Donut`, `AmzMonthly`, `HourlyStack`. Reciben los datos por props o
-  constantes; al portar, pasar los datos de Supabase por props.
+| Variable | Para qué |
+|---|---|
+| `SHOPIFY_STORE_DOMAIN`, `SHOPIFY_ADMIN_TOKEN` | Shopify Admin API (app privada, scopes de lectura `read_orders`, `read_products`). |
+| `SHOPIFY_API_VERSION` | Versión de la API (por defecto `2024-10`). |
+| `GOOGLE_ADS_DEVELOPER_TOKEN` | Developer token del MCC. |
+| `GOOGLE_ADS_CLIENT_ID`, `GOOGLE_ADS_CLIENT_SECRET`, `GOOGLE_ADS_REFRESH_TOKEN` | OAuth de Google Ads. |
+| `GOOGLE_ADS_LOGIN_CUSTOMER_ID` | MCC (`2333383997`). |
+| `GOOGLE_ADS_CUSTOMER_ID` | Cuenta España (`7701012791`). |
+| `PANEL_TIMEZONE` | Zona del negocio (`Europe/Madrid`). |
 
-## Taxonomía de canales
+## Sobre la atribución por canal
 
-El panel separa **SEO** y **Orgánico**. El enum del backend (`ledger_canal`) hoy los
-une en `seo_organico`. Para separarlos: añadir un canal `organico` al enum y ajustar
-`clasificar()` (social orgánico/referral → `organico`; búsqueda orgánica →
-`seo_organico`). Si no, el panel muestra 5 canales + Directo.
+Shopify **no trae origen** en ~94% de los pedidos (el `order_referrer_source` llega
+vacío). Por eso el panel muestra, de forma honesta, lo que **sí** es medible hoy:
+ventas web totales (Shopify) y la parte **atribuida a Google Ads** (según Google). El
+desglose fino de los 6 canales (SEO, Orgánico, Meta, Email, Directo, Directo) exige
+**captura de UTMs + atribución propia** — la capa «ledger» de la fase siguiente
+(ver `CONTEXT-ledger-ingesta.md`, aún no incluido).
 
-## Contrato de datos (qué sustituir por Supabase)
+## Estructura
 
-Las constantes del prototipo (`WEB`, `WEB_DAILY`, `WEB_H`, `AMZ_*`, `adsSpend`,
-`NOW_H`, …) se sustituyen por consultas a Supabase. Formato que esperan los
-componentes:
-
-```ts
-type MesCanal = Record<"SEO"|"Org"|"Goo"|"Met"|"Ema"|"Dir", number>; // € por canal
-// WEB:        Record<mes, MesCanal>
-// WEB_DAILY:  Record<"01".."28", MesCanal>
-// WEB_H:      Record<0..23, MesCanal>
-// AMZ_M:      Record<mes, number>    AMZ_H: Record<0..23, number>
+```
+app/            layout, página (server), estilos globales, fuentes (next/font)
+components/      Panel (tabs), vistas, gráficos SVG, UI, tooltip
+lib/            tipos, formato, tiempo, proveedores (shopify, googleAds) y agregador
+data/           snapshot.json  (datos reales de respaldo)
+prototype/      maqueta HTML original (referencia visual)
 ```
 
-| Constante (demo) | Significado | Origen real |
-|---|---|---|
-| `WEB[mes]` | ventas web €/canal/mes | `ledger_ventas_canal_diario` (shopify_es) por mes |
-| `WEB_DAILY[dia]` | ventas web €/canal/día | `ledger_ventas_canal_diario` por día (mes en curso) |
-| `WEB_H[hora]`, `WEB_TODAY` | ventas web €/canal/hora y acumulado del día | vista `ledger_ventas_canal_horario` |
-| `adsSpend`, `spend` (en RoasLine) | inversión Google/Meta por mes | `ledger_inversion_diaria` (google_ads / meta_ads) |
-| `AMZ_M[mes]`, `amzDaily`, `AMZ_H` | ventas Amazon mes/día/hora | `ledger_amazon_diario` (fase 2) |
-| `AMZ.{...}` | KPIs Amazon | SP-API + Amazon Ads API (fase 2) |
-| `NOW_H` | hora de corte «ahora» | `extract(hour from now() at time zone tz)` |
-| ROAS (Google/Meta) | ingresos atribuidos ÷ inversión | `ledger_roas_google_diario` (+ equivalente Meta) |
-| `proyCierre` | proyección de cierre del día | acumulado ÷ fracción de día, o media de últimos N días a esa hora |
+## Pendiente (fase 2)
 
-## Pasar al panel real (Next.js)
-
-1. `app/(panel)/layout.tsx` + una página por pestaña, o una página con tabs por hash.
-2. CSS del `index.html` a `globals.css` (o CSS modules). Fuentes con `next/font`.
-3. Componentes de chart a `components/` (sin cambios; reciben datos por props).
-4. Data layer: funciones server (RSC/route handlers) que consultan las vistas de
-   Supabase y pasan los datos a los componentes.
-5. Quitar `Banner`, el badge «Demo» y el helper `seeded`/generadores; `NOW_H` real.
-
-> Backend, atribución, ingesta y SQL (incluida la vista horaria y la tabla de Amazon):
-> ver `CONTEXT-ledger-ingesta.md`.
+- **Meta Ads** — adaptador listo; falta conectar la cuenta y añadir credenciales.
+- **Amazon** — SP-API (ventas) + Amazon Ads API (ACOS/TACOS).
+- **Atribución propia por canal** — captura de UTMs + modelo (capa «ledger», Supabase
+  opcional como almacén). Convierte el gran bloque «no atribuido» en los 6 canales.
