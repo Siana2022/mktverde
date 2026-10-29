@@ -30,6 +30,9 @@ Si ya hay un OAuth client creado para la integración de Google Ads, reutilízal
 - En **Authorized redirect URIs** añade:
   `https://developers.google.com/oauthplayground`
 - Guarda el **Client ID** y el **Client secret**.
+- **Importante:** la **pantalla de consentimiento de OAuth** debe estar en estado
+  **«En producción»**. Si está en **«Prueba» (Testing)**, el refresh token **caduca a
+  los 7 días** y el panel se desconectaría solo a la semana.
 
 ### 3. Refresh token (una vez)
 - Abre el [OAuth 2.0 Playground](https://developers.google.com/oauthplayground).
