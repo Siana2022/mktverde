@@ -7,10 +7,31 @@ import { monthKeyToLabel } from "./time";
 import { classifyOrder, emptySplit, type ChannelSplit } from "./attribution";
 
 const DOMAIN = process.env.SHOPIFY_STORE_DOMAIN;
-const TOKEN = process.env.SHOPIFY_ADMIN_TOKEN;
-const API_VERSION = process.env.SHOPIFY_API_VERSION || "2024-10";
+const TOKEN = process.env.SHOPIFY_ADMIN_TOKEN; // opción A: token fijo (apps antiguas)
+const CLIENT_ID = process.env.SHOPIFY_CLIENT_ID; // opción B: client credentials (apps del Dev Dashboard)
+const CLIENT_SECRET = process.env.SHOPIFY_CLIENT_SECRET;
+const API_VERSION = process.env.SHOPIFY_API_VERSION || "2025-10";
 
-export const shopifyConfigured = Boolean(DOMAIN && TOKEN);
+export const shopifyConfigured = Boolean(DOMAIN && (TOKEN || (CLIENT_ID && CLIENT_SECRET)));
+
+// Token de acceso: si hay token fijo se usa; si no, se pide con client credentials
+// (Client ID + secret), cacheándolo ~23 h (el token de Shopify dura 24 h).
+let tokenCache: { token: string; exp: number } | null = null;
+async function getAccessToken(): Promise<string> {
+  if (TOKEN) return TOKEN;
+  if (tokenCache && Date.now() < tokenCache.exp) return tokenCache.token;
+  const res = await fetch(`https://${DOMAIN}/admin/oauth/access_token`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json", Accept: "application/json" },
+    body: JSON.stringify({ client_id: CLIENT_ID, client_secret: CLIENT_SECRET, grant_type: "client_credentials" }),
+    cache: "no-store",
+  });
+  if (!res.ok) throw new Error(`Shopify token ${res.status}: ${await res.text()}`);
+  const j = (await res.json()) as { access_token: string; expires_in?: number };
+  const ttl = (j.expires_in ?? 86399) - 3600; // refresca 1 h antes de que caduque
+  tokenCache = { token: j.access_token, exp: Date.now() + ttl * 1000 };
+  return j.access_token;
+}
 
 interface OrderNode {
   createdAt: string;
@@ -36,11 +57,12 @@ const ORDERS_QUERY = /* GraphQL */ `
 `;
 
 async function graphql<T>(query: string, variables: Record<string, unknown>): Promise<T> {
+  const token = await getAccessToken();
   const res = await fetch(`https://${DOMAIN}/admin/api/${API_VERSION}/graphql.json`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
-      "X-Shopify-Access-Token": TOKEN as string,
+      "X-Shopify-Access-Token": token,
     },
     body: JSON.stringify({ query, variables }),
     // Revalidar como máximo cada 5 minutos.
