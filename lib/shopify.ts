@@ -22,8 +22,12 @@ async function getAccessToken(): Promise<string> {
   if (tokenCache && Date.now() < tokenCache.exp) return tokenCache.token;
   const res = await fetch(`https://${DOMAIN}/admin/oauth/access_token`, {
     method: "POST",
-    headers: { "Content-Type": "application/json", Accept: "application/json" },
-    body: JSON.stringify({ client_id: CLIENT_ID, client_secret: CLIENT_SECRET, grant_type: "client_credentials" }),
+    headers: { "Content-Type": "application/x-www-form-urlencoded", Accept: "application/json" },
+    body: new URLSearchParams({
+      grant_type: "client_credentials",
+      client_id: CLIENT_ID as string,
+      client_secret: CLIENT_SECRET as string,
+    }),
     cache: "no-store",
   });
   if (!res.ok) throw new Error(`Shopify token ${res.status}: ${await res.text()}`);
