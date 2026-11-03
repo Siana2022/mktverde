@@ -1,7 +1,29 @@
 # Estado del proyecto y siguientes pasos
 
-> Documento de continuidad. Última actualización: 2026-11-02.
+> Documento de continuidad. Última actualización: 2026-11-03.
 > Rama de trabajo: `claude/dazzling-albattani-bh6ea0`.
+
+## Ampliación 2026-11-03 (hecho y desplegado)
+- **Multi-país**: arquitectura para 3 tiendas Shopify independientes (ES en vivo;
+  IT y US cuando lleguen credenciales, variables `SHOPIFY_IT_*` / `SHOPIFY_US_*`).
+  **Selector de país** (Todos/ES/IT/EEUU) con consolidación en € (EEUU se convierte
+  con `FX_USD_EUR`). Los países sin datos salen como «pendiente».
+- **Filtro de fechas** interactivo (atajos + rango manual), sin recargar.
+- **Amazon y Terceros**: carga manual en `data/manual.json` (pestañas propias +
+  suma en Global), con la interfaz lista para pasar a API.
+- **Drill-down por canal** (pestaña Web): inversión vs ventas, ROAS y crecimiento
+  mes a mes al pinchar un canal.
+- **Comparativa interanual**: lista; se enciende sola al cargar `data/historico.json`
+  con los totales del WooCommerce antiguo.
+- Guía de uso: `docs/CARGA-MANUAL.md`.
+
+### Pendiente por parte de JuanJo
+- Credenciales Shopify de **Italia** y **EEUU** → pegar en Vercel (ver guía).
+- **Histórico** del WordPress antiguo → `data/historico.json` (mensual; si hay diario,
+  ampliamos para Intradía).
+- Cargar cifras de **Amazon/Terceros** en `data/manual.json` (o decidir API).
+- Credenciales de **Google Ads** y **Meta** (siguen pendientes; de momento solo España).
+
 
 ## Decisión estratégica (vigente)
 **Cerrar `mktverde` (Verde Esmeralda) primero. `brain` queda aparcado** y se retoma
