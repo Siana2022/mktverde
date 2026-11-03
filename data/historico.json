@@ -1,5 +1,7 @@
 {
-  "_comment": "Histórico del año pasado (del WooCommerce antiguo) para la comparativa interanual. Rellenar cuando se exporte del WordPress. Una fila por país y mes. key: 'YYYY-MM' del año pasado. webTotal/webOrders en EUR.",
-  "_ejemplo": { "country": "es", "key": "2025-11", "webTotal": 87000, "webOrders": 720 },
-  "months": []
+  "_comment": "Histórico del año pasado (del WooCommerce antiguo) para la comparativa interanual. 'months' (key 'YYYY-MM') para la comparativa mensual; 'days' (key 'YYYY-MM-DD') para la diaria e intradía. Se rellenan con la salida de /api/import-woo. webTotal/webOrders en EUR, país 'es'.",
+  "_ejemplo_mes": { "country": "es", "key": "2025-11", "webTotal": 87000, "webOrders": 720 },
+  "_ejemplo_dia": { "country": "es", "key": "2025-11-02", "webTotal": 1293.65, "webOrders": 11 },
+  "months": [],
+  "days": []
 }

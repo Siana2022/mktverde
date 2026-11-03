@@ -54,6 +54,9 @@ export interface DayPoint {
   amazonTotal?: number;
   tercerosTotal?: number;
   webByChannel?: ChannelSplit;
+  // Comparativa interanual diaria (mismo día del año pasado).
+  prevYearWebTotal?: number;
+  prevYearWebOrders?: number;
 }
 
 export interface HourPoint {
@@ -108,7 +111,8 @@ export interface RawDataset {
   fx: Record<string, number>; // tipos de cambio usados (p. ej. { USD: 0.92 })
   countries: CountryBlock[];
   // Comparativa interanual (se rellena con datos del histórico cuando estén).
-  historico?: Record<string, HistoMonth[]>; // clave: país
+  historico?: Record<string, HistoMonth[]>; // clave: país · meses 'YYYY-MM'
+  historicoDays?: Record<string, HistoMonth[]>; // clave: país · días 'YYYY-MM-DD'
 }
 
 // Mes del histórico del año pasado (comparativa interanual).
@@ -138,4 +142,7 @@ export interface PanelData {
   country: CountrySel;
   countriesAvailable: { code: Country; label: string; flag: string; live: boolean }[];
   fx: Record<string, number>;
+  // Mismo día del año pasado (día completo), para la Intradía. undefined = sin histórico.
+  todayPrevYearTotal?: number;
+  todayPrevYearOrders?: number;
 }

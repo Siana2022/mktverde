@@ -170,13 +170,21 @@ export function IntradiaView({ data }: { data: PanelData }) {
   const hoyPed = upto.reduce((a, h) => a + h.webOrders, 0);
   const best = upto.reduce((b, h) => (h.webTotal > b.webTotal ? h : b), { hour: 0, webTotal: 0, webOrders: 0 });
   const ticket = hoyPed ? hoyTot / hoyPed : 0;
+  const prevDay = data.todayPrevYearTotal; // mismo día del año pasado (día completo)
+  const paceHtml = prevDay
+    ? `corte ${String(data.nowHour).padStart(2, "0")}:00 · <span class="${hoyTot >= prevDay ? "up" : ""}">${Math.round((hoyTot / (prevDay || 1)) * 100)}% del año pasado</span>`
+    : undefined;
   return (
     <main>
       <section className="kpis">
-        <Kpi lab="Facturado hoy" val={eur(hoyTot)} sub={`corte ${String(data.nowHour).padStart(2, "0")}:00 · web · ${countryLabel(data)}`} />
+        <Kpi lab="Facturado hoy" val={eur(hoyTot)} sub={paceHtml ? undefined : `corte ${String(data.nowHour).padStart(2, "0")}:00 · web · ${countryLabel(data)}`} subHtml={paceHtml} />
         <Kpi lab="Pedidos hoy" val={num(hoyPed)} sub={hoyPed ? `ticket medio ${eur1(ticket)}` : "sin pedidos aún"} />
         <Kpi lab="Hora pico" val={best.webTotal > 0 ? `${best.hour}:00` : "—"} sub={best.webTotal > 0 ? eur(best.webTotal) + " en esa franja" : "día aún por arrancar"} />
-        <Kpi lab="Franja fuerte" val="18–21 h" sub="histórico de la tienda" />
+        {prevDay !== undefined ? (
+          <Kpi lab="Mismo día año pasado" val={eur(prevDay)} sub={`${num(data.todayPrevYearOrders || 0)} pedidos · día completo`} />
+        ) : (
+          <Kpi lab="Franja fuerte" val="18–21 h" sub="histórico de la tienda" />
+        )}
       </section>
       <section className="grid">
         <div className="card">
@@ -193,7 +201,12 @@ export function IntradiaView({ data }: { data: PanelData }) {
             <div><div className="lab">Pedidos</div><div className="v num">{num(hoyPed)}</div></div>
             <div className="note">
               <span>ℹ︎</span>
-              <span>Datos en tiempo real de Shopify. A primera hora la gráfica puede verse vacía: las franjas fuertes de tarde (18–21 h) aún no han entrado. La comparativa con el año pasado se activará al cargar el histórico.</span>
+              <span>
+                Datos en tiempo real de Shopify. A primera hora la gráfica puede verse vacía: las franjas fuertes de tarde (18–21 h) aún no han entrado.
+                {prevDay !== undefined
+                  ? ` El mismo día del año pasado se facturaron ${eur(prevDay)} en total (día completo).`
+                  : " La comparativa con el año pasado se activará al cargar el histórico diario."}
+              </span>
             </div>
           </div>
         </div>

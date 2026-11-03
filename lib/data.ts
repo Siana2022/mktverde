@@ -58,7 +58,8 @@ function fromSnapshot(): RawDataset {
     monthKeys,
     fx: fxRatesUsed(),
     countries: allBlocks,
-    historico: getHistorico(),
+    historico: getHistorico().months,
+    historicoDays: getHistorico().days,
   };
 }
 
@@ -160,7 +161,8 @@ export async function getRawDataset(): Promise<RawDataset> {
     monthKeys,
     fx: fxRatesUsed(),
     countries: blocks,
-    historico: getHistorico(),
+    historico: getHistorico().months,
+    historicoDays: getHistorico().days,
   };
 }
 

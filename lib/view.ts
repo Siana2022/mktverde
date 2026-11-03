@@ -95,6 +95,24 @@ export function buildView(raw: RawDataset, sel: Selection): PanelData {
   }
   const currentMonthDaily = [...dMap.values()].sort((a, b) => a.day.localeCompare(b.day));
 
+  // ── Comparativa interanual diaria (mismo día del año pasado) ──
+  const yearAgo = (d: string) => `${parseInt(d.slice(0, 4), 10) - 1}${d.slice(4)}`;
+  const histDays = raw.historicoDays || {};
+  const histDayMap = new Map<string, { t: number; o: number }>();
+  for (const b of blocks) {
+    for (const h of histDays[b.country] || []) {
+      const cur = histDayMap.get(h.key) || { t: 0, o: 0 };
+      cur.t += h.webTotal; cur.o += h.webOrders; histDayMap.set(h.key, cur);
+    }
+  }
+  if (histDayMap.size) {
+    for (const d of currentMonthDaily) {
+      const h = histDayMap.get(yearAgo(d.day));
+      if (h) { d.prevYearWebTotal = h.t; d.prevYearWebOrders = h.o; }
+    }
+  }
+  const todayPrev = histDayMap.get(yearAgo(raw.today));
+
   // ── Horario (hoy) ──
   const todayHourly: HourPoint[] = Array.from({ length: 24 }, (_, hour) => ({ hour, webTotal: 0, webOrders: 0, webByChannel: emptySplit() }));
   for (const b of blocks) {
@@ -133,6 +151,8 @@ export function buildView(raw: RawDataset, sel: Selection): PanelData {
     country: sel.country,
     countriesAvailable: raw.countries.map((b) => ({ code: b.country, label: b.label, flag: COUNTRY_META[b.country].flag, live: b.webLive })),
     fx: raw.fx,
+    todayPrevYearTotal: todayPrev ? todayPrev.t : undefined,
+    todayPrevYearOrders: todayPrev ? todayPrev.o : undefined,
   };
 }
 

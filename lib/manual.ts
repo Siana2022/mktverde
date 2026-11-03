@@ -55,15 +55,22 @@ export function getManual(): ManualData {
   return { amazon, terceros, hasAmazon: amazon.size > 0, hasTerceros: terceros.size > 0 };
 }
 
-// Histórico: país → lista de meses del año pasado (webTotal/webOrders en EUR).
-export function getHistorico(): Record<string, { key: string; webTotal: number; webOrders: number }[]> {
-  const out: Record<string, { key: string; webTotal: number; webOrders: number }[]> = {};
-  for (const r of ((historicoRaw as { months?: HistRow[] }).months || [])) {
+type HistoList = Record<string, { key: string; webTotal: number; webOrders: number }[]>;
+
+function groupHist(rows: HistRow[]): HistoList {
+  const out: HistoList = {};
+  for (const r of rows || []) {
     const c = (r.country || "es") as Country;
     (out[c] ||= []).push({ key: r.key, webTotal: r.webTotal || 0, webOrders: r.webOrders || 0 });
   }
   for (const c of Object.keys(out)) out[c].sort((a, b) => a.key.localeCompare(b.key));
   return out;
+}
+
+// Histórico del año pasado: por mes (comparativa mensual) y por día (diaria/intradía).
+export function getHistorico(): { months: HistoList; days: HistoList } {
+  const raw = historicoRaw as { months?: HistRow[]; days?: HistRow[] };
+  return { months: groupHist(raw.months || []), days: groupHist(raw.days || []) };
 }
 
 export const amazonKey = k;
