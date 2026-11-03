@@ -3,7 +3,7 @@
 import React, { useState } from "react";
 import type { PanelData, MonthPoint } from "@/lib/types";
 import { emptySplit, type Channel } from "@/lib/attribution";
-import { eur, eur1, num, roas } from "@/lib/format";
+import { eur, eur1, num, roas, delta } from "@/lib/format";
 import { Kpi, Legend, PendingCard } from "./ui";
 import { MonthlyWeb, RoasLine, ChannelMix, DailyStack, HourlyStack, ChannelBars, channelLegend } from "./charts";
 import { ChannelDetail } from "./drilldown";
@@ -26,6 +26,11 @@ const totalMonth = (m: MonthPoint) => m.webTotal + (m.amazonTotal || 0) + (m.ter
 export function GlobalView({ data }: { data: PanelData }) {
   const m = curr(data);
   const tot = totalMonth(m);
+  const hasPrev = data.months.some((x) => x.prevYearWebTotal !== undefined);
+  const yoy = m.prevYearWebTotal !== undefined ? delta(m.webTotal, m.prevYearWebTotal) : null;
+  const webSubHtml = yoy
+    ? `${num(m.webOrders)} pedidos · <span class="${yoy.cls}">${yoy.text} vs año pasado</span>`
+    : undefined;
   const sourceRows = [
     { label: "Web (Shopify)", value: m.webTotal, color: "var(--c-google)" },
     { label: "Amazon", value: m.amazonTotal || 0, color: "var(--c-meta)", note: m.amazonTotal === undefined ? "sin dato" : undefined },
@@ -35,7 +40,7 @@ export function GlobalView({ data }: { data: PanelData }) {
     <main>
       <section className="kpis">
         <Kpi lab="Facturación total" val={eur(tot)} sub={`${mLong(m)} · ${countryLabel(data)}`} />
-        <Kpi lab="Web (Shopify)" val={eur(m.webTotal)} sub={`${num(m.webOrders)} pedidos · ticket ${eur1(m.aov)}`} />
+        <Kpi lab="Web (Shopify)" val={eur(m.webTotal)} sub={webSubHtml ? undefined : `${num(m.webOrders)} pedidos · ticket ${eur1(m.aov)}`} subHtml={webSubHtml} />
         <Kpi lab="Amazon" val={m.amazonTotal === undefined ? "—" : eur(m.amazonTotal)} sub={m.amazonTotal === undefined ? "carga manual pendiente" : `${num(m.amazonOrders || 0)} pedidos`} amz />
         <Kpi lab="Terceros" val={m.tercerosTotal === undefined ? "—" : eur(m.tercerosTotal)} sub={m.tercerosTotal === undefined ? "carga manual pendiente" : `${num(m.tercerosOrders || 0)} pedidos`} />
       </section>
@@ -44,6 +49,12 @@ export function GlobalView({ data }: { data: PanelData }) {
           <h3>Facturación web mensual</h3>
           <div className="cap">Ventas en Shopify · {countryLabel(data)} · rango seleccionado</div>
           <MonthlyWeb months={data.months} />
+          {hasPrev && (
+            <div className="legend" style={{ marginTop: 6 }}>
+              <span className="lg"><span className="sw" style={{ background: "var(--accent)" }} />Este año</span>
+              <span className="lg"><span className="sw" style={{ background: "var(--faint)" }} />Año pasado (histórico)</span>
+            </div>
+          )}
         </div>
         <div className="card">
           <h3>Reparto por plataforma</h3>

@@ -10,11 +10,15 @@ const niceMax = (v: number, step: number) => Math.max(step, Math.ceil(v / step) 
 const splitTotal = (s: ChannelSplit) => CHANNELS.reduce((a, c) => a + (s[c] || 0), 0);
 export const channelLegend = (): [string, string, string][] => CHANNELS.map((c) => [c, CHANNEL_META[c].varName, CHANNEL_META[c].label]);
 
-// ── Barras mensuales de ventas web ──
+// ── Barras mensuales de ventas web (con línea opcional del año pasado) ──
 export function MonthlyWeb({ months }: { months: MonthPoint[] }) {
   const W = 560, H = 240, padL = 44, padB = 26, padT = 10, padR = 8;
-  const yMax = niceMax(Math.max(...months.map((m) => m.webTotal), 1), 10000);
+  const hasPrev = months.some((m) => m.prevYearWebTotal !== undefined);
+  const peak = Math.max(...months.map((m) => Math.max(m.webTotal, m.prevYearWebTotal ?? 0)), 1);
+  const yMax = niceMax(peak, 10000);
   const bw = (W - padL - padR) / months.length, y = (v: number) => padT + (H - padT - padB) * (1 - v / yMax);
+  const xc = (i: number) => padL + bw * i + bw * 0.5;
+  const prevPts = months.map((m, i) => (m.prevYearWebTotal !== undefined ? `${xc(i)},${y(m.prevYearWebTotal)}` : null)).filter(Boolean).join(" ");
   return (
     <svg viewBox={`0 0 ${W} ${H}`} role="img" aria-label="Ventas web mensuales">
       {[0, yMax / 2, yMax].map((t, i) => (
@@ -25,15 +29,25 @@ export function MonthlyWeb({ months }: { months: MonthPoint[] }) {
       ))}
       {months.map((m, i) => {
         const x = padL + bw * i + bw * 0.2, w = bw * 0.6, h = (H - padT - padB) * m.webTotal / yMax;
+        const yoy = m.prevYearWebTotal ? ` · año pasado ${eur(m.prevYearWebTotal)}` : "";
         return (
           <g key={m.key}>
             <rect className="seg" x={x} y={y(m.webTotal)} width={w} height={h} rx="3" fill="var(--accent)" opacity={m.partial ? 0.72 : 1}
-              onMouseMove={(e) => showTT(e, `${m.label}${m.partial ? " (en curso)" : ""} · <span class="num">${eur(m.webTotal)}</span> · ${m.webOrders} ped.`)}
+              onMouseMove={(e) => showTT(e, `${m.label}${m.partial ? " (en curso)" : ""} · <span class="num">${eur(m.webTotal)}</span> · ${m.webOrders} ped.${yoy}`)}
               onMouseLeave={hideTT} />
             <text className="axis" x={x + w / 2} y={H - padB + 14} textAnchor="middle">{m.label}</text>
           </g>
         );
       })}
+      {hasPrev && (
+        <>
+          <polyline points={prevPts} fill="none" stroke="var(--faint)" strokeWidth={2} strokeDasharray="4 3" strokeLinejoin="round" />
+          {months.map((m, i) => (m.prevYearWebTotal !== undefined ? (
+            <circle key={m.key} cx={xc(i)} cy={y(m.prevYearWebTotal)} r={2.6} fill="var(--faint)"
+              onMouseMove={(e) => showTT(e, `${m.label} · año pasado <span class="num">${eur(m.prevYearWebTotal as number)}</span>`)} onMouseLeave={hideTT} />
+          ) : null))}
+        </>
+      )}
     </svg>
   );
 }

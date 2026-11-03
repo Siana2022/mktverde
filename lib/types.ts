@@ -40,6 +40,9 @@ export interface MonthPoint {
   tercerosOrders?: number;
   webByChannel?: ChannelSplit; // ventas web repartidas por canal (atribución propia)
   partial?: boolean; // mes en curso, incompleto
+  // Comparativa interanual (mismo mes del año pasado). undefined = sin histórico.
+  prevYearWebTotal?: number;
+  prevYearWebOrders?: number;
 }
 
 export interface DayPoint {

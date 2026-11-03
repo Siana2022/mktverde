@@ -65,6 +65,23 @@ export function buildView(raw: RawDataset, sel: Selection): PanelData {
   const months = [...mMap.values()].sort((a, b) => a.key.localeCompare(b.key));
   for (const m of months) m.aov = m.webOrders ? m.webTotal / m.webOrders : 0;
 
+  // ── Comparativa interanual: enlaza cada mes con el mismo mes del año pasado ──
+  const hist = raw.historico || {};
+  const histMap = new Map<string, { t: number; o: number }>();
+  for (const b of blocks) {
+    for (const h of hist[b.country] || []) {
+      const cur = histMap.get(h.key) || { t: 0, o: 0 };
+      cur.t += h.webTotal; cur.o += h.webOrders; histMap.set(h.key, cur);
+    }
+  }
+  if (histMap.size) {
+    for (const m of months) {
+      const priorKey = `${parseInt(m.key.slice(0, 4), 10) - 1}-${m.key.slice(5, 7)}`;
+      const h = histMap.get(priorKey);
+      if (h) { m.prevYearWebTotal = h.t; m.prevYearWebOrders = h.o; }
+    }
+  }
+
   // ── Diario (mes actual) ──
   const dMap = new Map<string, DayPoint>();
   for (const b of blocks) {
