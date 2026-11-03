@@ -1,9 +1,12 @@
-import React from "react";
+"use client";
+
+import React, { useState } from "react";
 import type { PanelData, MonthPoint } from "@/lib/types";
-import { emptySplit } from "@/lib/attribution";
+import { emptySplit, type Channel } from "@/lib/attribution";
 import { eur, eur1, num, roas } from "@/lib/format";
 import { Kpi, Legend, PendingCard } from "./ui";
 import { MonthlyWeb, RoasLine, ChannelMix, DailyStack, HourlyStack, ChannelBars, channelLegend } from "./charts";
+import { ChannelDetail } from "./drilldown";
 
 const curr = (d: PanelData): MonthPoint => d.months[d.months.length - 1];
 const monthName: Record<string, string> = {
@@ -61,6 +64,7 @@ export function WebView({ data }: { data: PanelData }) {
   const m = curr(data);
   const roasG = m.googleSpend ? m.googleConvValue / m.googleSpend : 0;
   const split = m.webByChannel ?? emptySplit();
+  const [channel, setChannel] = useState<Channel | null>(null);
   return (
     <main>
       <section className="kpis">
@@ -79,14 +83,16 @@ export function WebView({ data }: { data: PanelData }) {
         </div>
         <div className="card">
           <h3>Mezcla de canales · {mLong(m)}</h3>
-          <div className="cap">Atribución propia (UTMs + clic de pago), último toque</div>
-          <ChannelMix split={split} />
+          <div className="cap">Pincha un canal para ver inversión vs ventas y crecimiento</div>
+          <ChannelMix split={split} onPick={(c) => setChannel((p) => (p === c ? null : c))} active={channel} />
           <div className="note" style={{ marginTop: 12 }}>
             <span>✓</span>
             <span>Reparto real a partir de los parámetros de campaña (gclid/fbclid, utm_*) capturados en cada pedido.</span>
           </div>
         </div>
       </section>
+
+      {channel && <ChannelDetail months={data.months} channel={channel} onClose={() => setChannel(null)} />}
 
       <section>
         <div className="card">

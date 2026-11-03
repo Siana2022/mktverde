@@ -198,20 +198,29 @@ export function Donut({ web, amazon, label }: { web: number; amazon: number | nu
 }
 
 // ── Mezcla por canal (barras horizontales desde un ChannelSplit) ──
-export function ChannelMix({ split }: { split: ChannelSplit }) {
+// Si se pasa `onPick`, cada fila es clicable (abre el detalle del canal).
+export function ChannelMix({ split, onPick, active }: { split: ChannelSplit; onPick?: (c: Channel) => void; active?: Channel | null }) {
   const total = splitTotal(split) || 1;
   const rows = CHANNELS.map((c) => ({ c, label: CHANNEL_META[c].label, color: `var(${CHANNEL_META[c].varName})`, value: split[c] || 0 }))
     .sort((a, b) => b.value - a.value);
   const max = Math.max(...rows.map((r) => r.value), 1);
   return (
     <div>
-      {rows.map((r) => (
-        <div className="chrow" key={r.c}>
-          <div className="chname"><span className="sw" style={{ background: r.color }} />{r.label}</div>
-          <div className="chbarwrap"><div className="chbar" style={{ width: (r.value / max) * 100 + "%", background: r.color }} /></div>
-          <div className="chval num"><b>{eur(r.value)}</b><span>{Math.round((r.value / total) * 100)}%</span></div>
-        </div>
-      ))}
+      {rows.map((r) => {
+        const inner = (
+          <>
+            <div className="chname"><span className="sw" style={{ background: r.color }} />{r.label}</div>
+            <div className="chbarwrap"><div className="chbar" style={{ width: (r.value / max) * 100 + "%", background: r.color }} /></div>
+            <div className="chval num"><b>{eur(r.value)}</b><span>{Math.round((r.value / total) * 100)}%</span></div>
+          </>
+        );
+        if (!onPick) return <div className="chrow" key={r.c}>{inner}</div>;
+        return (
+          <button type="button" className={"chrow pick" + (active === r.c ? " on" : "")} key={r.c} onClick={() => onPick(r.c)} aria-pressed={active === r.c}>
+            {inner}
+          </button>
+        );
+      })}
     </div>
   );
 }
