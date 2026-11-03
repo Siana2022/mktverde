@@ -1,0 +1,10 @@
+{
+  "_comment": "Carga MANUAL de Amazon y Terceros (de momento; luego se conectará por API). Añade una fila por país y mes. 'total' y 'spend' en la moneda indicada en '_moneda' (por defecto EUR). country: es | it | us. key: 'YYYY-MM'.",
+  "_moneda": "EUR",
+  "_ejemplo": {
+    "amazon": { "country": "es", "key": "2026-10", "total": 12000, "orders": 150, "spend": 1800, "convValue": 9000 },
+    "terceros": { "country": "es", "key": "2026-10", "total": 5000, "orders": 40, "nota": "distribuidor X" }
+  },
+  "amazon": [],
+  "terceros": []
+}

@@ -1,4 +1,6 @@
 import React from "react";
+import type { SourceStatus } from "@/lib/types";
+import { COUNTRY_META } from "@/lib/types";
 
 export function Kpi({ lab, val, sub, amz, subHtml }: { lab: string; val: React.ReactNode; sub?: string; subHtml?: string; amz?: boolean }) {
   return (
@@ -27,16 +29,22 @@ export function Legend({ items }: { items: [string, string, string][] }) {
   );
 }
 
-export function SourceBanner({ live, sources, generatedAt }: { live: boolean; sources: { shopify: boolean; googleAds: boolean }; generatedAt: string }) {
+export function SourceBanner({ live, sources, generatedAt, fx }: { live: boolean; sources: SourceStatus; generatedAt: string; fx?: Record<string, number> }) {
   const when = new Date(generatedAt).toLocaleString("es-ES", { dateStyle: "medium", timeStyle: "short" });
+  const paises = (sources.shopifyCountries || []).map((c) => COUNTRY_META[c].label).join(", ");
+  const on = [
+    sources.shopify && `Shopify (${paises || "—"})`,
+    sources.googleAds && "Google Ads",
+    sources.meta && "Meta Ads",
+    sources.amazon && "Amazon (manual)",
+    sources.terceros && "Terceros (manual)",
+  ].filter(Boolean).join(" · ");
+  const fxNote = fx && fx.USD ? ` · 1 USD = ${fx.USD.toLocaleString("es-ES", { maximumFractionDigits: 2 })} €` : "";
   if (live) {
-    const on = [sources.shopify && "Shopify", sources.googleAds && "Google Ads"].filter(Boolean).join(" + ");
     return (
       <div className="banner">
         <span>🟢</span>
-        <span>
-          <b>Datos en vivo</b> — {on}. Actualizado {when}. Meta Ads y Amazon: pendientes de conectar (fase 2).
-        </span>
+        <span><b>Datos en vivo</b> — {on}. Actualizado {when}{fxNote}.</span>
       </div>
     );
   }
@@ -44,8 +52,7 @@ export function SourceBanner({ live, sources, generatedAt }: { live: boolean; so
     <div className="banner warn">
       <span>📌</span>
       <span>
-        <b>Datos reales (instantánea)</b> — capturados de Shopify y Google Ads el {when}. Añade las credenciales en Vercel
-        para que se actualice solo. Meta Ads y Amazon: pendientes de conectar (fase 2).
+        <b>Datos reales (instantánea)</b> — capturados el {when}. Añade las credenciales en Vercel para que se actualice solo.
       </span>
     </div>
   );
