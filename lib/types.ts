@@ -89,7 +89,7 @@ export interface CountryBlock {
   fxToEur: number;
   webLive: boolean; // la tienda Shopify de ese país da datos en vivo
   months: MonthPoint[];
-  currentMonthDaily: DayPoint[];
+  days: DayPoint[]; // días disponibles (en vivo + baseline del año en curso)
   todayHourly: HourPoint[];
   topProductsCurrentMonth: Product[];
 }

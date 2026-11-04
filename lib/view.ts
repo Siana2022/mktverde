@@ -82,10 +82,11 @@ export function buildView(raw: RawDataset, sel: Selection): PanelData {
     }
   }
 
-  // ── Diario (mes actual) ──
+  // ── Diario: días dentro del rango (consolidado). Si el rango abarca muchos días,
+  // se colapsa al último mes del rango para que la gráfica diaria siga siendo legible.
   const dMap = new Map<string, DayPoint>();
   for (const b of blocks) {
-    for (const d of b.currentMonthDaily) {
+    for (const d of b.days) {
       if (!inDayRange(d.day)) continue;
       const acc = dMap.get(d.day) || { day: d.day, webTotal: 0, webOrders: 0, googleSpend: 0, googleConvValue: 0, webByChannel: emptySplit() };
       acc.webTotal += d.webTotal; acc.webOrders += d.webOrders; acc.googleSpend += d.googleSpend; acc.googleConvValue += d.googleConvValue;
@@ -93,7 +94,11 @@ export function buildView(raw: RawDataset, sel: Selection): PanelData {
       dMap.set(d.day, acc);
     }
   }
-  const currentMonthDaily = [...dMap.values()].sort((a, b) => a.day.localeCompare(b.day));
+  let currentMonthDaily = [...dMap.values()].sort((a, b) => a.day.localeCompare(b.day));
+  if (currentMonthDaily.length > 45) {
+    const lastKey = currentMonthDaily[currentMonthDaily.length - 1].day.slice(0, 7);
+    currentMonthDaily = currentMonthDaily.filter((d) => d.day.slice(0, 7) === lastKey);
+  }
 
   // ── Comparativa interanual diaria (mismo día del año pasado) ──
   const yearAgo = (d: string) => `${parseInt(d.slice(0, 4), 10) - 1}${d.slice(4)}`;

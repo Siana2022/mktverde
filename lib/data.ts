@@ -10,6 +10,7 @@ import { STORES, storeConfigured, anyStoreConfigured, type StoreConfig } from ".
 import { getGoogleAds, type GoogleMetrics } from "./googleAds";
 import { getMeta } from "./meta";
 import { getManual, getHistorico, type AmazonAgg, type TercerosAgg } from "./manual";
+import { getBaseline, type Baseline } from "./baseline";
 import { fxRatesUsed } from "./fx";
 import { nowInTz, lastNMonthKeys, monthKeyToLabel } from "./time";
 
@@ -34,7 +35,7 @@ function fromSnapshot(): RawDataset {
     fxToEur: 1,
     webLive: false,
     months: s.months as MonthPoint[],
-    currentMonthDaily: s.currentMonthDaily as DayPoint[],
+    days: s.currentMonthDaily as DayPoint[],
     todayHourly: s.todayHourly as HourPoint[],
     topProductsCurrentMonth: s.topProductsCurrentMonth as Product[],
   };
@@ -43,6 +44,8 @@ function fromSnapshot(): RawDataset {
   const monthKeys = (s.months as MonthPoint[]).map((m) => m.key);
   const otherBlocks = STORES.filter((st) => st.country !== "es").map((st) => emptyBlock(st, monthKeys));
   const allBlocks = [block, ...otherBlocks];
+  const baseline = getBaseline();
+  for (const b of allBlocks) applyBaseline(b, baseline, monthKeys, s.today);
   applyManual(allBlocks);
   return {
     generatedAt: s.generatedAt,
@@ -85,9 +88,36 @@ function emptyBlock(s: StoreConfig, monthKeys: string[]): CountryBlock {
   }));
   return {
     country: s.country, label: s.label, currency: s.currency, fxToEur: s.fxToEur, webLive: false,
-    months, currentMonthDaily: [], todayHourly: Array.from({ length: 24 }, (_, hour) => ({ hour, webTotal: 0, webOrders: 0 })),
+    months, days: [], todayHourly: Array.from({ length: 24 }, (_, hour) => ({ hour, webTotal: 0, webOrders: 0 })),
     topProductsCurrentMonth: [],
   };
+}
+
+// Rellena un bloque con el histórico del año en curso (baseline): meses vacíos y
+// días que la API de pedidos no alcanza. Los datos en vivo tienen prioridad.
+function applyBaseline(block: CountryBlock, baseline: Baseline, monthKeys: string[], today: string): void {
+  for (const m of block.months) {
+    if ((m.webTotal || 0) === 0) {
+      const b = baseline.months.get(`${block.country}:${m.key}`);
+      if (b) {
+        m.webTotal = b.webTotal; m.webGross = b.webTotal; m.webNet = b.webTotal;
+        m.webOrders = b.webOrders; m.aov = b.webOrders ? b.webTotal / b.webOrders : 0;
+      }
+    }
+  }
+  const from = `${monthKeys[0]}-01`;
+  const liveByDay = new Map(block.days.map((d) => [d.day, d]));
+  const keys = new Set<string>(block.days.map((d) => d.day));
+  for (const k of baseline.days.keys()) {
+    const [c, day] = k.split(":");
+    if (c === block.country && day >= from && day <= today) keys.add(day);
+  }
+  block.days = [...keys].sort().map((day) => {
+    const live = liveByDay.get(day);
+    if (live) return live;
+    const b = baseline.days.get(`${block.country}:${day}`) as { webTotal: number; webOrders: number };
+    return { day, webTotal: b.webTotal, webOrders: b.webOrders, googleSpend: 0, googleConvValue: 0 };
+  });
 }
 
 export async function getRawDataset(): Promise<RawDataset> {
@@ -126,16 +156,18 @@ export async function getRawDataset(): Promise<RawDataset> {
         webByChannel: m.webByChannel, partial: m.key === monthKey,
       };
     });
-    const currentMonthDaily: DayPoint[] = agg.currentMonthDaily.map((d) => {
+    const days: DayPoint[] = agg.currentMonthDaily.map((d) => {
       const gm = isEs ? gd(d.day) : EMPTY_G;
       return { day: d.day, webTotal: d.webTotal, webOrders: d.webOrders, googleSpend: gm.spend, googleConvValue: gm.convValue, webByChannel: d.webByChannel };
     });
     return {
       country: s.country, label: s.label, currency: s.currency, fxToEur: s.fxToEur, webLive: true,
-      months, currentMonthDaily, todayHourly: agg.todayHourly, topProductsCurrentMonth: agg.topProducts,
+      months, days, todayHourly: agg.todayHourly, topProductsCurrentMonth: agg.topProducts,
     };
   });
 
+  const baseline = getBaseline();
+  for (const b of blocks) applyBaseline(b, baseline, monthKeys, today);
   const { hasAmazon, hasTerceros } = applyManual(blocks);
 
   const sources: SourceStatus = {
