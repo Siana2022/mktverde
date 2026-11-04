@@ -2,7 +2,7 @@
   "manifest_version": "0.3",
   "name": "verde-esmeralda-ventas",
   "display_name": "Ventas Verde Esmeralda",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "Consulta las ventas multicanal de Verde Esmeralda (web Shopify + Google Ads, con atribución propia por canal) desde Claude, para analizar y tomar decisiones.",
   "long_description": "Expone como herramientas MCP los datos de ventas de Verde Esmeralda: ventas web por canal (SEO, Orgánico, Google Ads, Meta Ads, Email, Directo) con atribución propia a partir de los UTMs capturados en cada pedido, histórico mensual, ventas diarias, intradía y la inversión/ROAS de Google Ads. Sin credenciales funciona con una instantánea de datos reales; al configurar Shopify (y opcionalmente Google Ads) pasa a datos en vivo.",
   "author": { "name": "Siana Digital", "url": "https://sianadigital.com" },
@@ -14,8 +14,17 @@
       "args": ["${__dirname}/server/index.mjs"],
       "env": {
         "SHOPIFY_STORE_DOMAIN": "${user_config.shopify_domain}",
+        "SHOPIFY_CLIENT_ID": "${user_config.shopify_client_id}",
+        "SHOPIFY_CLIENT_SECRET": "${user_config.shopify_client_secret}",
         "SHOPIFY_ADMIN_TOKEN": "${user_config.shopify_token}",
-        "SHOPIFY_API_VERSION": "2024-10",
+        "SHOPIFY_API_VERSION": "2025-10",
+        "SHOPIFY_IT_STORE_DOMAIN": "${user_config.shopify_it_domain}",
+        "SHOPIFY_IT_CLIENT_ID": "${user_config.shopify_it_client_id}",
+        "SHOPIFY_IT_CLIENT_SECRET": "${user_config.shopify_it_client_secret}",
+        "SHOPIFY_US_STORE_DOMAIN": "${user_config.shopify_us_domain}",
+        "SHOPIFY_US_CLIENT_ID": "${user_config.shopify_us_client_id}",
+        "SHOPIFY_US_CLIENT_SECRET": "${user_config.shopify_us_client_secret}",
+        "FX_USD_EUR": "${user_config.fx_usd_eur}",
         "GOOGLE_ADS_DEVELOPER_TOKEN": "${user_config.google_dev_token}",
         "GOOGLE_ADS_CLIENT_ID": "${user_config.google_client_id}",
         "GOOGLE_ADS_CLIENT_SECRET": "${user_config.google_client_secret}",
@@ -29,18 +38,84 @@
   "user_config": {
     "shopify_domain": {
       "type": "string",
-      "title": "Dominio Shopify (.myshopify.com)",
+      "title": "España · Dominio Shopify (.myshopify.com)",
       "description": "Dominio interno de la tienda, por ejemplo q2ugmg-bz.myshopify.com",
       "required": false,
       "default": "q2ugmg-bz.myshopify.com"
     },
-    "shopify_token": {
+    "shopify_client_id": {
       "type": "string",
-      "title": "Shopify Admin API token",
-      "description": "Token shpat_... de una app privada con permisos de lectura. Si lo dejas vacío, se usan datos de muestra reales.",
+      "title": "España · Shopify Client ID",
+      "description": "Client ID de la app del Dev Dashboard (client credentials). Es la forma recomendada.",
+      "required": false,
+      "default": ""
+    },
+    "shopify_client_secret": {
+      "type": "string",
+      "title": "España · Shopify Client secret",
+      "description": "Client secret de la app. Si rellenas Client ID + secret no hace falta el token fijo.",
       "sensitive": true,
       "required": false,
       "default": ""
+    },
+    "shopify_token": {
+      "type": "string",
+      "title": "España · Shopify Admin token (alternativa)",
+      "description": "Token shpat_... de app con token fijo. Solo si no usas Client ID/secret. Vacío = datos de muestra.",
+      "sensitive": true,
+      "required": false,
+      "default": ""
+    },
+    "shopify_it_domain": {
+      "type": "string",
+      "title": "Italia · Dominio Shopify (.myshopify.com)",
+      "description": "Opcional. Dominio de la tienda de Italia.",
+      "required": false,
+      "default": ""
+    },
+    "shopify_it_client_id": {
+      "type": "string",
+      "title": "Italia · Shopify Client ID",
+      "description": "Opcional.",
+      "required": false,
+      "default": ""
+    },
+    "shopify_it_client_secret": {
+      "type": "string",
+      "title": "Italia · Shopify Client secret",
+      "description": "Opcional.",
+      "sensitive": true,
+      "required": false,
+      "default": ""
+    },
+    "shopify_us_domain": {
+      "type": "string",
+      "title": "EEUU · Dominio Shopify (.myshopify.com)",
+      "description": "Opcional. Dominio de la tienda de EEUU.",
+      "required": false,
+      "default": ""
+    },
+    "shopify_us_client_id": {
+      "type": "string",
+      "title": "EEUU · Shopify Client ID",
+      "description": "Opcional.",
+      "required": false,
+      "default": ""
+    },
+    "shopify_us_client_secret": {
+      "type": "string",
+      "title": "EEUU · Shopify Client secret",
+      "description": "Opcional.",
+      "sensitive": true,
+      "required": false,
+      "default": ""
+    },
+    "fx_usd_eur": {
+      "type": "string",
+      "title": "Tipo de cambio USD→EUR",
+      "description": "Para convertir EEUU a € en el consolidado. Por defecto 0.92.",
+      "required": false,
+      "default": "0.92"
     },
     "google_dev_token": {
       "type": "string",
